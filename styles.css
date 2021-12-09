@@ -5,6 +5,8 @@
 body {
     background-image: url(./img/homeIndex_bg.jpeg);
     padding: 10px;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .container {
