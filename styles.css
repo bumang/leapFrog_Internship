@@ -1,10 +1,10 @@
 * {
     color: black;
+    margin: 0px;
 }
 
 body {
     background-image: url(./img/homeIndex_bg.jpeg);
-    padding: 10px;
     background-repeat: no-repeat;
     background-size: cover;
 }
@@ -14,7 +14,7 @@ body {
 }
 
 p {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     font-family: "Sofia", sans-serif;
     margin: 0%;
@@ -39,4 +39,35 @@ table {
     margin-left: auto;
     margin-right: auto;
     width: 800px;
+    margin-top: 50px;
+    font-size: 18px;
+}
+
+a:link {
+    text-decoration: none;
+    color: red;
+}
+
+a:visited {
+    text-decoration: none;
+    color: #80808000;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: royalblue;
+}
+
+tbody tr:hover {
+    background-color: rgb(233, 202, 202);
+}
+
+a:active {
+    color: green;
+}
+
+th,
+td {
+    padding: 5px;
+    border-bottom: 2px solid rgb(119, 94, 93);
 }
