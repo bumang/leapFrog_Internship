@@ -37,7 +37,7 @@ h2 {
 }
 
 table {
-    padding-top: 50px;
+    padding-top: 25px;
     font-size: 18px;
     margin: auto;
     text-align: left;
@@ -72,8 +72,8 @@ tr:nth-child(even) {
 
 a:link,
 a:visited {
-    color: black;
-    padding: 8px;
+    color: #E74C3C;
+    padding: 3px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
