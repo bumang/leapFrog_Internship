@@ -5,8 +5,9 @@
 
 body {
     background-image: url(./img/homeIndex_bg.jpeg);
-    background-repeat: no-repeat;
+    background-position: center;
     background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .container {
@@ -36,38 +37,36 @@ h2 {
 }
 
 table {
-    margin-left: auto;
-    margin-right: auto;
-    width: 800px;
-    margin-top: 50px;
+    padding-top: 50px;
     font-size: 18px;
+    margin: auto;
+    text-align: left;
 }
 
-a:link {
-    text-decoration: none;
-    color: red;
-}
-
-a:visited {
-    text-decoration: none;
-    color: #80808000;
-}
-
-a:hover {
-    text-decoration: underline;
-    color: royalblue;
+.tableCol-1,
+.tableCol-2,
+.tableCol-3,
+.tableCol-4 {
+    color: whitesmoke;
+    background-color: #2C3E50;
 }
 
 tbody tr:hover {
     background-color: rgb(233, 202, 202);
 }
 
-a:active {
-    color: green;
-}
-
 th,
 td {
-    padding: 5px;
-    border-bottom: 2px solid rgb(119, 94, 93);
+    padding: 10px;
+    border-bottom: 1px solid rgb(119, 94, 93);
+    border-radius: 5px;
+    bor
+}
+
+tr:nth-child(odd) {
+    background-color: #ECF0F1;
+}
+
+tr:nth-child(even) {
+    background-color: #B2BABB;
 }
