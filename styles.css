@@ -69,3 +69,19 @@ tr:nth-child(odd) {
 tr:nth-child(even) {
     background-color: #B2BABB;
 }
+
+a:link,
+a:visited {
+    color: black;
+    padding: 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 5px;
+}
+
+a:hover,
+a:active {
+    background-color: green;
+    color: white;
+}
