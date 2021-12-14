@@ -1,0 +1,426 @@
+/* header bar */
+
+.searchBar input {
+    border: none;
+    padding: 3.5px;
+    width: 230px;
+    background-color: #CAEFF7;
+    font-size: 10px;
+}
+
+input:focus {
+    outline: none;
+}
+
+.searchBar {
+    width: 247px;
+    background-color: #CAEFF7;
+}
+
+.searchBar a {
+    padding: 0px 2px;
+}
+
+.searchButton {
+    background-color: #264E56;
+    text-decoration: none;
+    color: #F4F6F3;
+    font-size: 10px;
+    padding: 5px 0px;
+    font-family: 'Mulish', sans-serif;
+}
+
+.searchIcon {
+    margin-left: 1px;
+}
+
+.button {
+    margin-left: 7px;
+}
+
+.searchWrap {
+    width: 276px;
+}
+
+.headerTop {
+    padding: 20px 0px 16px 0px;
+}
+
+.container {
+    width: 940px;
+    margin: 0px auto;
+}
+
+.searchArea {
+    margin: 20px 0px 0px 24px;
+}
+
+.userInfoWrap li {
+    display: inline-block;
+}
+
+.userInfoWrap li a {
+    text-decoration: none;
+    font-family: 'Mulish', sans-serif;
+    font-size: 12px;
+    color: black;
+}
+
+.userName {
+    margin-left: 100px;
+    font-family: 'Mulish', sans-serif;
+    font-size: 16px;
+    padding: 5px;
+}
+
+.userOption {
+    float: right;
+}
+
+
+/* navigation bar*/
+
+.navWrap {
+    background-color: #F5F5F5;
+}
+
+.navBarLeft li {
+    font-family: 'Mulish', sans-serif;
+    font-size: 14px;
+    color: black;
+    padding: 15px;
+}
+
+.navBarLeft li:hover {
+    background-color: #DDDDDD;
+}
+
+.navBarRight ul li {
+    font-family: 'Mulish', sans-serif;
+    font-size: 10px;
+    color: #969696;
+    padding: 12px;
+    display: inline-block;
+}
+
+.navBarRight {
+    padding-top: 10px;
+}
+
+.navBarRight ul a {
+    text-decoration: none;
+    padding-top: 25px;
+}
+
+.navBarRight ul li.enabled {
+    color: black;
+    padding-top: 5px;
+}
+
+.navBarRight ul li:first-child {
+    background-image: url(../images/navBarRight-1.png);
+    background-repeat: no-repeat;
+    margin-right: 15px;
+}
+
+.navBarRight li:last-child {
+    background-image: url(../images/navBarRight-2.png);
+    background-repeat: no-repeat;
+    padding-left: 25px;
+    padding-top: 5px;
+}
+
+
+/* BODY css start */
+
+
+/* left bar css */
+
+.body {
+    font-family: 'Mulish', sans-serif;
+}
+
+.left-bar ul li {
+    padding: 12px;
+    font-family: 'Mulish', sans-serif;
+    line-height: 20px;
+}
+
+.left-bar ul li a {
+    font-size: 12px;
+}
+
+.recent-search {
+    background-color: #00c0dd;
+    display: block;
+    color: #f7f0ee;
+    padding: 13px;
+    font-size: 16px;
+}
+
+.rs-items {
+    background-color: #f5f5f5;
+    display: block;
+    padding: 2.5px;
+}
+
+.rs-items li {
+    list-style-type: none;
+    font-size: 12px;
+    padding: 5px;
+}
+
+.left-bar ul li a:first-child {
+    float: left;
+    width: 137px;
+}
+
+.rs-items li a {
+    text-decoration: none;
+    color: black;
+}
+
+.rs-items ul li a:first-child {
+    float: left;
+    width: 137px;
+}
+
+.left-bar ul li:hover {
+    background-color: #ffffff;
+}
+
+.rs-items-b ul li a:hover {
+    background-color: #ffffff;
+}
+
+.left-bar ul li a:last-child img {
+    margin-left: 14px;
+}
+
+.rs-items-b ul:first-child img {
+    margin-left: 14px;
+}
+
+
+/* right bar css */
+
+.video-tutorial {
+    background-color: #00c0dd;
+    display: block;
+    color: #f7f0ee;
+    padding: 13px;
+    font-size: 16px;
+}
+
+.right-bar-list li {
+    list-style-type: none;
+    padding: 3px;
+    font-size: 12px;
+    background-color: #f5f5f5;
+    line-height: 28px;
+}
+
+.right-bar-list ul li a {
+    text-decoration: none;
+    color: black;
+    padding: 5px;
+}
+
+.right-bar-list ul :hover {
+    background-color: #ffffff;
+}
+
+
+/* footer css */
+
+footer {
+    background-color: #727272;
+}
+
+.footer-wrapper {
+    display: block;
+    text-align: center;
+    padding: 15px;
+}
+
+.footer-list {
+    float: left;
+    font-family: 'Mulish', sans-serif;
+    font-weight: bold;
+}
+
+.footer-list ul {
+    list-style: none;
+}
+
+.footer-list ul li {
+    display: inline;
+    color: white;
+    font-size: 11px;
+    padding: 0px 7px;
+}
+
+.footer-list ul li::before {
+    content: "\2022";
+    padding: 0px 6px;
+}
+
+.footer-list ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 11px;
+}
+
+.footer-list ul li:first-child::before {
+    content: "";
+    padding: 0px;
+}
+
+.copyright {
+    float: right;
+    color: white;
+    font-size: 11px;
+    text-align: center;
+}
+
+
+/* body main css */
+
+.body-head {
+    font-family: 'Mulish', sans-serif;
+    margin: -5px 0px 0px 5px;
+    font-size: 26px;
+}
+
+.middle-head {
+    margin-top: auto;
+    display: inline-block;
+    border-bottom: 2px #00c0dd solid;
+    font-family: 'Mulish', sans-serif;
+    font-size: 14px;
+    width: 518px;
+}
+
+.middleHeadLeft .middleHeadRight {
+    width: 250px;
+    font-size: 10px;
+    font-family: 'Mulish', sans-serif;
+}
+
+.entries-a {
+    background-color: #f5f5f5;
+    width: 245px;
+}
+
+.entries-b {
+    background-color: #f5f5f5;
+    width: 245px;
+}
+
+.entries-head {
+    text-align: center;
+    padding: 15px;
+}
+
+.subhead-wrapper {
+    display: block;
+}
+
+.subhead-wrapper ul li {
+    display: inline-block;
+}
+
+.e-subhead li a:hover {
+    background-color: #2FC1DA;
+    color: white;
+}
+
+
+/* 
+.e-subhead li a {
+    text-decoration: none;
+    font-size: 10px;
+    color: #000;
+    background-color: #DDDDDD;
+    padding: 10px;
+} */
+
+
+/* ul li a:active {
+    background-color: #2FC1D8;
+    color: #FFFFFD;
+}
+*/
+
+.e-subhead li:first-child {
+    float: left;
+}
+
+.e-subhead li:last-child {
+    float: right;
+}
+
+.entries-b ul li {
+    display: inline-block;
+}
+
+
+/* to be continued  */
+
+
+/* body user reviews */
+
+.reviews {
+    display: block;
+    padding: 11px 0px;
+    font-family: 'Mulish', sans-serif;
+}
+
+.comment {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 24px;
+    font-family: 'Mulish', sans-serif;
+}
+
+.normalp {
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.comment-1 {
+    text-decoration: none;
+    color: #00c0dd;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.comment-2 {
+    text-decoration: none;
+    color: #b2d189;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.comment-3 {
+    color: #00c0dd;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 12px;
+}
+
+.comment-4 {
+    font-size: 10px;
+    font-weight: bolder;
+    line-height: 11px;
+    color: #d43e1b;
+}
+
+.hr {
+    color: #d8d8d8;
+    height: 1px;
+    padding: 0 !important;
+    margin: 0 !important;
+}
