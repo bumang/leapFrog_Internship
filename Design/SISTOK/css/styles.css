@@ -187,6 +187,45 @@
 }
 
 
+/* servicos */
+
+.servicos-top {
+    line-height: 42px;
+    letter-spacing: 0.05rem;
+    font-size: 13.8px;
+    color: #4c5d73;
+}
+
+.servicos-middle {
+    width: 100%;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 32px;
+    color: #111826;
+}
+
+.servicos-bottom {
+    width: 100%;
+    margin: 42px 0 0 0;
+}
+
+.servicos-box {
+    width: 100%;
+    padding-bottom: 46px;
+}
+
+.box-wrap {
+    padding: 28px;
+    max-width: 24.25rem;
+    cursor: pointer;
+    left: 72px;
+    top: 915px;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 10px 10px 50px rgb(48 79 140 / 16%);
+}
+
+
 /* footer */
 
 footer {
