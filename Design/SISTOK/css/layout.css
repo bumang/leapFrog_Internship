@@ -1,0 +1,109 @@
+.whole-wrapper {
+    min-width: 12.5rem;
+}
+
+.content-wrapper {
+    min-width: 12rem;
+    margin: 0px auto;
+    max-width: 80rem;
+}
+
+.container {
+    min-width: 6.25rem;
+    margin: 0px auto;
+    max-width: 71rem;
+}
+
+.top-container {
+    min-width: 12.5rem;
+    max-width: 80rem;
+}
+
+
+/* nav-bar */
+
+.bar-galaxy-fold {
+    display: none;
+}
+
+.nav-right {
+    float: right;
+}
+
+.logo {
+    float: left;
+    margin-top: 12px;
+}
+
+.sign-up {
+    float: right;
+}
+
+.ham-burger-menu {
+    float: left;
+    padding: 10px 10px;
+    margin: 10px 0px;
+}
+
+
+/* body container */
+
+.body-container {
+    margin: 10px auto;
+    margin-top: 111px;
+}
+
+.img-top {
+    display: block;
+    width: 20.3125rem;
+    margin: 0 auto;
+}
+
+.big-msg {
+    max-width: 100%;
+    margin: 0px auto;
+}
+
+.business-services-list {
+    display: none;
+}
+
+.learn-more-btn {
+    float: left;
+}
+
+.empty-space {
+    max-width: 25%;
+    float: left;
+    padding: 10px 45px;
+}
+
+.company-services {
+    min-width: 100%;
+    float: left;
+}
+
+.service-left {
+    float: left;
+    min-width: 50%;
+}
+
+.service-right {
+    min-width: 50%;
+}
+
+.service {
+    float: left;
+}
+
+.service-photo {
+    float: left;
+}
+
+.service-name {
+    float: right;
+    padding: 5px 9px;
+}
+
+
+/* media query for tablets */
