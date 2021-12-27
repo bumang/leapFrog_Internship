@@ -12,6 +12,7 @@
     min-width: 6.25rem;
     margin: 0px auto;
     max-width: 71rem;
+    padding: 0 10px;
 }
 
 .top-container {
@@ -50,12 +51,13 @@
 
 .body-container {
     margin: 10px auto;
-    margin-top: 111px;
+    margin-top: 120px;
+    margin-bottom: 0;
 }
 
 .img-top {
     display: block;
-    width: 20.3125rem;
+    width: 18rem;
     margin: 0 auto;
 }
 
@@ -111,6 +113,3 @@
 .servicos {
     margin: 50px 0;
 }
-
-
-/* media query for tablets */
