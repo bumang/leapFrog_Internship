@@ -1,0 +1,95 @@
+.banner-holder {
+    padding: 26px 0px;
+}
+
+.banner {
+    position: relative;
+}
+
+.banner-slider {
+    overflow: hidden;
+    width: 100%;
+}
+
+.banner-slider ul {
+    list-style: none;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.banner-slider ul li {
+    float: left;
+    border-radius: 5px;
+    max-width: 100%;
+    -webkit-box-shadow: 0px 3px 0px 0px rgba(229, 230, 230, 1);
+    -moz-box-shadow: 0px 3px 0px 0px rgba(229, 230, 230, 1);
+    box-shadow: 0px 0px 3px 0px rgba(229, 230, 230, 1);
+}
+
+.banner-slider ul li.selected {
+    display: block;
+}
+
+.banner-slider ul li img {
+    border-radius: 5px;
+}
+
+.banner-slider-button {
+    width: 50px;
+    height: 60px;
+    background-image: url(../images/banner-button.png);
+    background-repeat: no-repeat;
+    display: block;
+    position: absolute;
+}
+
+.banner-right {
+    top: 45%;
+    right: 0px;
+}
+
+.banner-left {
+    top: 45%;
+    left: 0px;
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.banner-slider-button a {
+    display: block;
+    text-align: center;
+    font-size: 40px;
+    color: #fff;
+}
+
+.selection {
+    margin: 0px auto;
+    display: table;
+    padding: 31px 0px 28px 0px;
+}
+
+.selection ul li {
+    width: 60px;
+    height: 5px;
+    margin: 0px 5px;
+    background-color: #b0b8b9;
+}
+
+.selection ul li.selected {
+    background-color: #e2534b;
+}
+
+.selection ul li a {
+    display: block;
+    /*text-indent: -10000px;*/
+}
+
+.selection ul li:hover {
+    background-color: #e2534b;
+}
