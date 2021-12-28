@@ -100,7 +100,7 @@ function Ball() {
 };
 
 /* button for ball addition */
-const ballCount = 5;
+const ballCount = 1000;
 const ballArray = [];
 
 var addBall = document.createElement(`button`);
