@@ -1,7 +1,7 @@
 /* variables */
 const PI = 3.14592;
 const BOUNDARY_HEIGHT = 800;
-const BOUNDARY_WIDTH = 900;
+const BOUNDARY_WIDTH = 1500;
 const FPS = 60;
 
 
@@ -12,8 +12,8 @@ var body = document.getElementsByTagName(`body`)[0];
 
 var canvas = document.getElementById(`myCanvas`);
 var ctx = canvas.getContext("2d");
-canvas.style.width = `${BOUNDARY_WIDTH}px`;
-canvas.style.height = `${BOUNDARY_HEIGHT}px`;
+canvas.width = BOUNDARY_WIDTH;
+canvas.height = BOUNDARY_HEIGHT;
 canvas.style.border = `1px solid black`;
 canvas.style.margin = `50px auto`;
 canvas.style.position = `relative`;
@@ -25,7 +25,7 @@ body.appendChild(canvas);
 
 function Ball() {
 
-    this.radius = getRandomInt(4, 15);;
+    this.radius = getRandomInt(10, 20);
     var that = this;
     this.perfectWidth = canvas.width - this.radius;
     this.perfectHeight = canvas.height - this.radius;
@@ -34,10 +34,10 @@ function Ball() {
     this.dx = getDirection();
     this.dy = getDirection();
     this.speed = '1';
-
-
-
     this.color = generateRandomColor();
+
+
+
 
     this.createBall = function() {
         ctx.beginPath();
@@ -45,23 +45,18 @@ function Ball() {
         ctx.fillStyle = this.color;
         ctx.fill();
         ctx.closePath();
+
     };
 
     this.moveBall = function() {
+        that.x += that.dx * that.speed;
+        that.y += that.dy * that.speed;
+        that.createBall();
+        that.checkWallCollision();
+        that.checkBallCollision();
 
-        setInterval(() => {
-            that.x += that.dx * that.speed;
-            that.y += that.dy * that.speed;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            that.createBall();
-            that.checkWallCollision();
-            that.checkBallCollision();
-            that.setSpeed();
 
-        }, 1000 / FPS);
-
-    };
-
+    }
     this.checkWallCollision = function() {
         if (that.x + that.dx > that.perfectWidth || that.x + that.dx < that.radius) {
             that.dx = -that.dx;
@@ -71,9 +66,9 @@ function Ball() {
         }
     };
     this.checkBallCollision = function() {
+
         this.check = function() {
             this.result = '';
-            console.log(this.result);
             for (var i = 0; i < ballArray.length; i++) {
                 for (var j = 1; j < ballArray.length - 1; j++) {
                     var distance = getDistance(ballArray[i].x, ballArray[i].y, ballArray[j].x, ballArray.y);
@@ -88,7 +83,7 @@ function Ball() {
             return result;
         }
 
-        if (check == true) { /* collision detected */
+        if (this.check == true) { /* collision detected */
             console.log("collision detected")
         } else {
 
@@ -98,24 +93,23 @@ function Ball() {
     this.setSpeed = function() {
         switch (that.radius) {
             case 1:
-                if (that.radius <= 6)
-                    that.speed = 2;
+                if (that.radius <= 12)
+                    that.speed = 3;
                 break;
             case 2:
-                if (that.radius <= 9)
-                    that.speed = 1.5;
+                if (that.radius <= 14)
+                    that.speed = 2;
                 break;
             case 3:
-                if (that.radius <= 12)
+                if (that.radius <= 16)
                     that.speed = 1;
                 break;
             default:
-                that.speed = 0.5;
+                that.speed = 1;
                 break;
         }
 
     }
-
 
 };
 
@@ -138,7 +132,15 @@ addBall.onclick = function() {
         var ball = new Ball();
         ballArray.push(ball);
         ball.moveBall();
-        console.log(ballArray)
+        ball.setSpeed();
 
     }
 }
+
+setInterval(() => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ballArray.forEach((item) => {
+        item.moveBall();
+    })
+}, 1000 / FPS);
