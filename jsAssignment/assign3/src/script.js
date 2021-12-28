@@ -34,7 +34,9 @@ function Ball() {
     this.dx = getDirection();
     this.dy = getDirection();
     this.speed = '1';
+    this.mass = '1';
     this.color = generateRandomColor();
+
 
 
 
@@ -54,6 +56,7 @@ function Ball() {
         that.createBall();
         that.checkWallCollision();
         that.checkBallCollision();
+        that.setSpeed();
 
 
     }
@@ -67,31 +70,14 @@ function Ball() {
     };
     this.checkBallCollision = function() {
 
-        this.check = function() {
-            this.result = '';
-            for (var i = 0; i < ballArray.length; i++) {
-                for (var j = 1; j < ballArray.length - 1; j++) {
-                    var distance = getDistance(ballArray[i].x, ballArray[i].y, ballArray[j].x, ballArray.y);
-                    typeof(distance)
-                    if (distance < ballArray[i].radius + ballArray[j].radius) {
-                        result = true;
-                    } else {
-                        result = false;
-                    }
-                }
-            }
-            return result;
-        }
 
-        if (this.check == true) { /* collision detected */
+        if (this.match == true) { /* collision detected */
             console.log("collision detected")
-        } else {
-
         }
     };
 
     this.setSpeed = function() {
-        switch (that.radius) {
+        switch (that.speed) {
             case 1:
                 if (that.radius <= 12)
                     that.speed = 3;
@@ -132,7 +118,8 @@ addBall.onclick = function() {
         var ball = new Ball();
         ballArray.push(ball);
         ball.moveBall();
-        ball.setSpeed();
+
+
 
     }
 }
@@ -144,3 +131,19 @@ setInterval(() => {
         item.moveBall();
     })
 }, 1000 / FPS);
+
+/* collision detection */
+
+function checkBallCollision(ball) {
+    let i = 0;
+    for (i = 0; i < ballArray.length; i++) {
+        if (ballArray[i] == ball) {
+            continue;
+        } else {
+            let distance = getDistance();
+            if (distance <= (ball.radius + ballArray[i].radius)) {
+                handleCollision(ball, ballArray[i], distance);
+            }
+        }
+    }
+}
