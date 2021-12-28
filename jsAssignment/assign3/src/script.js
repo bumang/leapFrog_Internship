@@ -71,19 +71,27 @@ function Ball() {
         }
     };
     this.checkBallCollision = function() {
-
-
-
-        for (var i = 0; i < ballArray.length; i++) {
-            for (var j = 1; j < ballArray.length - 1; j++) {
-                var distance = getDistance(ballArray[i].x, ballArray[i].y, ballArray[j].x, ballArray.y);
-                typeof(distance)
-                if (distance < ballArray[i].radius + ballArray[j].radius) {
-
-                    console.log("boom!");
+        this.check = function() {
+            this.result = '';
+            console.log(this.result);
+            for (var i = 0; i < ballArray.length; i++) {
+                for (var j = 1; j < ballArray.length - 1; j++) {
+                    var distance = getDistance(ballArray[i].x, ballArray[i].y, ballArray[j].x, ballArray.y);
+                    typeof(distance)
+                    if (distance < ballArray[i].radius + ballArray[j].radius) {
+                        result = true;
+                    } else {
+                        result = false;
+                    }
                 }
-
             }
+            return result;
+        }
+
+        if (check == true) { /* collision detected */
+            console.log("collision detected")
+        } else {
+
         }
     };
 
@@ -91,18 +99,18 @@ function Ball() {
         switch (that.radius) {
             case 1:
                 if (that.radius <= 6)
-                    that.speed = 4;
+                    that.speed = 2;
                 break;
             case 2:
                 if (that.radius <= 9)
-                    that.speed = 3;
+                    that.speed = 1.5;
                 break;
             case 3:
                 if (that.radius <= 12)
-                    that.speed = 2;
+                    that.speed = 1;
                 break;
             default:
-                that.speed = 1;
+                that.speed = 0.5;
                 break;
         }
 
