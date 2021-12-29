@@ -7,6 +7,7 @@ var BULLET_HEIGHT = 50;
 var counter = 0;
 var backgroundMove;
 var mainWrapper = document.getElementById('mainWrapper');
+mainWrapper.style.margin = '50px auto';
 
 var getRandomValue = function() {
     return Math.floor(Math.random() * 2);
