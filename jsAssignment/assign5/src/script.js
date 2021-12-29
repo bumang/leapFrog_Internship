@@ -33,7 +33,7 @@ function World(elementId) {
         startButton.style.display = 'block';
         startButton.style.margin = '0px auto';
 
-        startHeading.appendChild(document.createTextNode('Space to Shoot, direction key to Navigate'));
+        startHeading.appendChild(document.createTextNode('Space to Shoot(not working), direction key to Navigate'));
         startButton.appendChild(document.createTextNode('PLAY'));
 
         this.mainElement.appendChild(startHeading);
