@@ -14,8 +14,7 @@ function keyDownHandler(e) {
 }
 
 function keyUpHandler(e) {
-    // delete KEYS[e.key];
-    console.log(e);
+    delete KEYS[e.key];
     if (e.key == ' ') {
         spacePressed = false;
     } else if (e.key == 'ArrowRight') {
@@ -25,5 +24,4 @@ function keyUpHandler(e) {
 
         leftPressed = false;
     }
-    console.log(rightPressed)
 }

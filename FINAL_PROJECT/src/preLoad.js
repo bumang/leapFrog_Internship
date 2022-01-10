@@ -1,5 +1,5 @@
 /* global declarations */
-let totalImage = 7;
+let totalImage = 8;
 
 /* Image declaration and sourcing */
 let level1Img = new Image();
@@ -30,6 +30,10 @@ let arrow = new Image();
 arrow.src = './img/arrow.png';
 arrow.id = 'arrow';
 
+let ball1 = new Image();
+ball1.src = './img/level-1-ball.png';
+ball1.id = 'ball-1';
+
 
 class Preloader {
     constructor() {
@@ -58,6 +62,9 @@ class Preloader {
             this.imageCount += 1;
         }
         arrow.onload = () => {
+            this.imageCount += 1;
+        }
+        ball1.onload = () => {
             this.imageCount += 1;
         }
         this.checkLoader();

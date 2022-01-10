@@ -16,7 +16,7 @@ const BOUNDARIES = {
     left: SIDE_BAR_WIDTH,
     right: PLAYGROUND_WIDTH + SIDE_BAR_WIDTH,
     top: SPIKE_HEIGHT,
-    bottom: HEIGHT - BOTTOM_BAR_HEIGHT
+    bottom: PLAYGROUND_HEIGHT
 };
 
 const KEYS = [];
@@ -27,7 +27,7 @@ const PLAYER = {
     width: 32,
     frameX: 0,
     frameY: 3,
-    speed: 5,
+    speed: 8,
     moving: false
 }
 let rightPressed = false;
@@ -50,28 +50,31 @@ class Game {
         /* adding character */
         this.character = new Character(this.ctx);
 
+        /* adding ball */
+        this.ball = new Ball(this.ctx);
+
         /* arrow key listeners */
         document.addEventListener("keydown", (e) => {
             keyDownHandler(e);
             if (rightPressed == true) {
                 this.character.moveCharacter('right');
-                this.character.animateCharacter();
-                PLAYER.moving = true;
+                this.character.moving = true;
             } else if (leftPressed == true) {
                 this.character.moveCharacter('left');
-                this.character.animateCharacter();
-                PLAYER.moving = true;
+                this.character.moving = true;
             } else if (spacePressed == true) {
-                this.character.throwArrow(e.key);
-                PLAYER.moving = true;
+                this.character.moving = true;
             }
         }, false);
 
         document.addEventListener("keyup", (e) => {
             keyUpHandler(e);
-            PLAYER.moving = false;
-            PLAYER.frameY = 3;
-            PLAYER.frameX = 0;
+            this.character.frameY = 3;
+            this.character.frameX = 0;
+            if (rightPressed == false && leftPressed == false) {
+                this.character.moveCharacter('');
+                this.character.moving = false;
+            }
         }, false);
 
         /* adding animation */
@@ -81,11 +84,14 @@ class Game {
             elapsed = now - previous;
             if (elapsed > fpsInterval) {
                 previous = now - (elapsed % fpsInterval)
+                now = Date.now();
+                elapsed = now - previous;
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.background.level1();
                 this.character.drawCharacter();
-                now = Date.now();
-                elapsed = now - previous;
+                this.ball.level1Ball();
+                this.detectCollision();
+
             }
 
         }
@@ -99,65 +105,90 @@ class Game {
             cancelAnimationFrame(this.reqAnimationId)
         }
         this.start(12);
+        // this.ball.position.x + this.ball.ballYellow.dW == this.character.x + PLAYER_WIDTH 
+        /* collision detection */
+        this.detectCollision = () => {
+            const conditionY = this.ball.position.y >= PLAYER.y;
+            const conditionX = this.ball.position.x > this.character.x && this.ball.position.x < this.character.x + PLAYER_WIDTH;
+            if (conditionY && conditionX) {
+                alert('collision detected');
+            }
+        }
+
+
+
+    }
+    gameOver() {
+        this.end();
     }
 
 }
 
 class Character {
     constructor(ctx) {
+        this.direction = '';
         this.ctx = ctx;
+        this.moving = false;
+        this.x = PLAYER.x;
+        this.frameY = PLAYER.frameY;
+        this.frameX = PLAYER.frameX;
         this.ctx.imageSmoothingQuality = 'high';
         this.arrow = {
             x: 9,
-            y: 2,
-            frameY: 2,
+            y: 690,
             speed: 5,
+            error: 3
         }
     }
 
     drawCharacter() {
-        this.ctx.drawImage(playerSprite, PLAYER.width * PLAYER.frameX, PLAYER.height * PLAYER.frameY, PLAYER.width, PLAYER.height, PLAYER.x, PLAYER.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+        if (this.direction == 'right') {
+            if (this.x >= BOUNDARIES.right - PLAYER_WIDTH + MARGIN_OF_ERROR) {
+                this.x = this.x;
+            } else {
+                this.frameY = 2;
+                this.x += PLAYER.speed;
 
+            }
+        } else if (this.direction == 'left') {
+            if (this.x <= BOUNDARIES.left - MARGIN_OF_ERROR) {
+                this.x = this.x;
+            } else {
+                this.x -= PLAYER.speed;
+                this.frameY = 1;
+            }
+        }
+        if (!this.direction == '') {
+            this.animateCharacter();
+        }
+        this.throwArrow();
+        this.ctx.drawImage(playerSprite, PLAYER.width * this.frameX, PLAYER.height * this.frameY, PLAYER.width, PLAYER.height, this.x, PLAYER.y, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
 
     moveCharacter(direction) {
-        if (direction == 'right') {
-            if (PLAYER.x >= BOUNDARIES.right - PLAYER_WIDTH + MARGIN_OF_ERROR) {
-                PLAYER.x = PLAYER.x;
-            } else {
-                PLAYER.frameY = 2;
-                PLAYER.x += PLAYER.speed;
+        this.direction = direction;
 
-            }
-        } else if (direction == 'left') {
-            if (PLAYER.x <= BOUNDARIES.left - MARGIN_OF_ERROR) {
-                PLAYER.x = PLAYER.x;
-            } else {
-                PLAYER.x -= PLAYER.speed;
-                PLAYER.frameY = 1;
-            }
-        }
     }
     animateCharacter() {
-        if (PLAYER.frameX < 3 && PLAYER.moving) {
-            PLAYER.frameX++;
-        } else {
-            PLAYER.frameX = 0;
+            if (this.frameX < 3 && this.moving) {
+                this.frameX++;
+            } else {
+                this.frameX = 0;
+            }
         }
-    }
-
-    throwArrow(key) {
-        if (key == ' ') {
-            this.ctx.drawImage(arrow, PLAYER.x, PLAYER.y, this.arrow.x, this.arrow.y);
-        }
+        // this.x + (PLAYER_WIDTH / 2) - this.arrow.error
+    throwArrow() {
+        this.ctx.drawImage(arrow, 0, 0, this.arrow.x, this.arrow.y, this.x + (PLAYER_WIDTH / 2) - this.arrow.error, BOUNDARIES.top, this.arrow.x, BOUNDARIES.bottom - SPIKE_HEIGHT);
     }
 }
+
 
 
 class Background {
     constructor(ctx) {
         this.ctx = ctx;
         this.ctx.imageSmoothingQuality = 'high';
+
     }
 
 
@@ -176,9 +207,43 @@ class Background {
 class Ball {
     constructor(ctx) {
         this.ctx = ctx;
+        this.ballYellow = {
+            orgiWidth: 74,
+            orgiHeight: 74,
+            dW: 50,
+            dH: 50,
+            top: 300,
+            left: SIDE_BAR_WIDTH
+        }
+        this.position = {
+            x: SIDE_BAR_WIDTH,
+            y: 300
+        }
+        this.velocity = {
+            x: 5,
+            y: 15
+        }
+        this.gravity = 0.5;
     }
 
     level1Ball() {
+        // this.position.y += this.gravity;
+        this.position.y = this.position.y + this.velocity.y;
+        if (this.position.y + this.ballYellow.dH >= BOUNDARIES.bottom) {
+            this.velocity.y = -this.velocity.y;
+        } else if (this.position.y <= this.ballYellow.top) {
+            this.velocity.y = -this.velocity.y;
+        }
+
+        this.position.x = this.position.x + this.velocity.x;
+        if (this.position.x + this.ballYellow.dW >= BOUNDARIES.right) {
+            this.velocity.x = -this.velocity.x;
+
+        } else if (this.position.x <= this.ballYellow.left) {
+            this.velocity.x = -this.velocity.x;
+        }
+        this.ctx.drawImage(ball1, 0, 0, this.ballYellow.orgiWidth, this.ballYellow.orgiHeight, this.position.x, this.position.y, this.ballYellow.dW, this.ballYellow.dH);
 
     }
+
 }
