@@ -21,6 +21,10 @@ p {
     margin: 0%;
 }
 
+.assignment {
+    padding-bottom: 50px;
+}
+
 h1,
 h2 {
     text-shadow: 5px 5px 5px #ababab;
