@@ -35,12 +35,15 @@ let leftPressed = false;
 let spacePressed = false;
 let fps, fpsInterval, startTime, previous, now, elapsed;
 
+
 class Game {
     constructor() {
         this.body = document.getElementById('game-wrapper');
         this.canvas = document.querySelector('canvas');
         this.ctx = this.canvas.getContext('2d');
         this.ctx.imageSmoothingQuality = 'high';
+        this.life = 3;
+        this.score = 0;
     }
 
     Play() {
@@ -91,6 +94,9 @@ class Game {
                 this.character.drawCharacter();
                 this.ball.level1Ball();
                 this.detectCollision();
+                this.levelIndicator();
+                this.lifeIndicator();
+                this.drawScore();
 
             }
 
@@ -111,15 +117,47 @@ class Game {
             const conditionY = this.ball.position.y >= PLAYER.y;
             const conditionX = this.ball.position.x > this.character.x && this.ball.position.x < this.character.x + PLAYER_WIDTH;
             if (conditionY && conditionX) {
-                alert('collision detected');
+                // alert('collision detected');
+                this.life = this.life - 1;
+
+
             }
         }
 
+        this.levelIndicator = () => {
+            this.ctx.font = "bolder 52px Comic Sans MS";
+            this.ctx.fillStyle = "red";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText(this.ball.level, this.background.box.levelLeft + 30, this.background.box.levelTop + 43);
+        }
+
+        this.lifeIndicator = () => {
+            let indicator = {
+                SH: 19,
+                SW: PLAYER.width,
+                DH: 30,
+                DW: 40,
+                dTop: this.background.box.lifeTop + 5,
+                dLeft: this.background.box.lifeLeft + 5
+            }
+            for (let i = this.life; i > 0; i--) {
+                this.ctx.drawImage(playerSprite, 0, 0, indicator.SW, indicator.SH, indicator.dLeft, indicator.dTop, indicator.DW, indicator.DH);
+                indicator.dLeft += 40;
+            }
+        }
+
+        this.drawScore = () => {
+            this.ctx.font = "bolder 32px Comic Sans MS";
+            this.ctx.fillStyle = "red";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText(this.score, this.background.box.scoreLeft + this.background.box.scoreW - 100, this.background.box.scoreTop + 30);
+        }
 
 
     }
     gameOver() {
-        this.end();
+        this.ball.velocity.x = 0;
+        this.ball.velocity.y = 0;
     }
 
 }
@@ -188,19 +226,109 @@ class Background {
     constructor(ctx) {
         this.ctx = ctx;
         this.ctx.imageSmoothingQuality = 'high';
+        this.torch = {
+            sW: 18,
+            sH: 53,
+            dW: 30,
+            dH: 90,
+            top: HEIGHT - 120,
+            left1: WIDTH / 2 + 150,
+            left2: WIDTH / 2 - 150
+        }
+        this.levelIndicator = {
+            sW: 78,
+            sH: 25,
+            dW: 150,
+            dH: 40,
+            top: HEIGHT - 120,
+            left: WIDTH / 2 - 60
+        }
+        this.playerBox = {
+            sW: 101,
+            sH: 25,
+            dW: 150,
+            dH: 40,
+            top: HEIGHT - 50,
+            left: SIDE_BAR_WIDTH + 10
+        }
+        this.box = {
+            sW: 60,
+            sH: 20,
+            nameW: 200,
+            nameH: 40,
+            nameTop: HEIGHT - 50,
+            nameLeft: SIDE_BAR_WIDTH + 170,
+            scoreW: 200,
+            scoreH: 40,
+            scoreTop: HEIGHT - 100,
+            scoreLeft: SIDE_BAR_WIDTH + 10,
+            lifeW: 250,
+            lifeH: 40,
+            lifeTop: HEIGHT - 120,
+            lifeLeft: PLAYGROUND_WIDTH - SIDE_BAR_WIDTH - MARGIN_OF_ERROR,
+            levelW: 60,
+            levelH: 50,
+            levelTop: HEIGHT - 70,
+            levelLeft: WIDTH / 2 - 15,
+        }
+        this.clock = {
+            time: PLAYGROUND_WIDTH - MARGIN_OF_ERROR,
+            top: BOUNDARIES.bottom + 13,
+            left: SIDE_BAR_WIDTH + 5,
+            height: 30,
+            boxLeft: SIDE_BAR_WIDTH,
+            boxTop: BOUNDARIES.bottom + 8,
+            boxW: PLAYGROUND_WIDTH,
+            boxH: 40,
+            timeUp: 2,
+            timeSpeed: 5
+        }
 
     }
-
-
     level1() {
         this.ctx.drawImage(level1Img, SIDE_BAR_WIDTH, 0, PLAYGROUND_WIDTH, PLAYGROUND_HEIGHT);
         this.ctx.drawImage(backLeftImg, 0, 0, SIDE_BAR_WIDTH, HEIGHT);
         this.ctx.drawImage(backRightImg, WIDTH - SIDE_BAR_WIDTH, 0, SIDE_BAR_WIDTH, HEIGHT);
         this.ctx.drawImage(backBottomImg, SIDE_BAR_WIDTH, PLAYGROUND_HEIGHT, PLAYGROUND_WIDTH, BOTTOM_BAR_HEIGHT);
-        this.spikes = this.ctx.createPattern(spike, 'repeat-x');
-        this.ctx.rect(SIDE_BAR_WIDTH, 0, PLAYGROUND_WIDTH, SPIKE_HEIGHT);
-        this.ctx.fillStyle = this.spikes;
-        this.ctx.fill();
+        this.drawSpikes = () => {
+            this.spikes = this.ctx.createPattern(spike, 'repeat-x');
+            this.ctx.fillStyle = this.spikes;
+            this.ctx.fillRect(SIDE_BAR_WIDTH, 0, PLAYGROUND_WIDTH, SPIKE_HEIGHT);
+        }
+        this.drawSpikes();
+        this.ctx.drawImage(torch, 0, 0, this.torch.sW, this.torch.sH, this.torch.left1, this.torch.top, this.torch.dW, this.torch.dH);
+        this.ctx.drawImage(torch, 0, 0, this.torch.sW, this.torch.sH, this.torch.left2, this.torch.top, this.torch.dW, this.torch.dH);
+        this.ctx.drawImage(level, 0, 0, this.levelIndicator.sW, this.levelIndicator.sH, this.levelIndicator.left, this.levelIndicator.top, this.levelIndicator.dW, this.levelIndicator.dH);
+        this.ctx.drawImage(emptyBox, 0, 0, this.box.sW, this.box.sH, this.box.levelLeft, this.box.levelTop, this.box.levelW, this.box.levelH);
+        this.ctx.drawImage(playerB, 0, 0, this.playerBox.sW, this.playerBox.sH, this.playerBox.left, this.playerBox.top, this.playerBox.dW, this.playerBox.dH);
+        this.ctx.drawImage(emptyBox, 0, 0, this.box.sW, this.box.sH, this.box.nameLeft, this.box.nameTop, this.box.nameW, this.box.nameH);
+        this.ctx.drawImage(emptyBox, 0, 0, this.box.sW, this.box.sH, this.box.scoreLeft, this.box.scoreTop, this.box.scoreW, this.box.scoreH);
+        this.ctx.drawImage(emptyBox, 0, 0, this.box.sW, this.box.sH, this.box.lifeLeft, this.box.lifeTop, this.box.lifeW, this.box.lifeH);
+        this.timer = () => {
+            this.ctx.fillStyle = '#656565';
+            this.ctx.fillRect(this.clock.boxLeft, this.clock.boxTop, this.clock.boxW, this.clock.boxH);
+            this.ctx.fillStyle = 'red';
+            this.ctx.fillRect(this.clock.left, this.clock.top, this.clock.time, this.clock.height);
+            if (this.clock.time <= 5) {
+                this.clock.time = this.clock.timeUp;
+            }
+            this.clock.time -= this.clock.timeSpeed;
+        }
+        this.timer();
+        this.scoreHeader = () => {
+            this.ctx.font = "bolder 32px Comic Sans MS";
+            this.ctx.fillStyle = "red";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText("SCORE :", this.box.scoreLeft + 65, this.box.scoreTop - 5);
+        }
+        this.scoreHeader();
+        this.lifeHeader = () => {
+            this.ctx.font = "bolder 32px Comic Sans MS";
+            this.ctx.fillStyle = "red";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText("LIFE :", this.box.lifeLeft - 60, this.box.lifeTop + 30);
+        }
+        this.lifeHeader();
     }
 }
 
@@ -221,20 +349,20 @@ class Ball {
         }
         this.velocity = {
             x: 5,
-            y: 15
+            y: 18
         }
-        this.gravity = 0.5;
+        this.gravity = 2;
+
+        this.level = 1;
     }
 
     level1Ball() {
-        // this.position.y += this.gravity;
         this.position.y = this.position.y + this.velocity.y;
-        if (this.position.y + this.ballYellow.dH >= BOUNDARIES.bottom) {
+        if (this.position.y >= BOUNDARIES.bottom - this.ballYellow.dH || this.position.y < BOUNDARIES.top) {
             this.velocity.y = -this.velocity.y;
-        } else if (this.position.y <= this.ballYellow.top) {
-            this.velocity.y = -this.velocity.y;
+        } else {
+            this.velocity.y += this.gravity;
         }
-
         this.position.x = this.position.x + this.velocity.x;
         if (this.position.x + this.ballYellow.dW >= BOUNDARIES.right) {
             this.velocity.x = -this.velocity.x;

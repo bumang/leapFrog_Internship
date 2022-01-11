@@ -1,5 +1,5 @@
 /* global declarations */
-let totalImage = 8;
+let totalImage = 12;
 
 /* Image declaration and sourcing */
 let level1Img = new Image();
@@ -34,6 +34,22 @@ let ball1 = new Image();
 ball1.src = './img/level-1-ball.png';
 ball1.id = 'ball-1';
 
+let torch = new Image();
+torch.src = './img/torch.png';
+torch.id = 'torch';
+
+let level = new Image();
+level.src = './img/level.png';
+level.id = 'level';
+
+let playerB = new Image();
+playerB.src = './img/player.png';
+playerB.id = 'player';
+
+let emptyBox = new Image();
+emptyBox.src = './img/empty-box.png';
+emptyBox.id = 'empty-box';
+
 
 class Preloader {
     constructor() {
@@ -65,6 +81,18 @@ class Preloader {
             this.imageCount += 1;
         }
         ball1.onload = () => {
+            this.imageCount += 1;
+        }
+        torch.onload = () => {
+            this.imageCount += 1;
+        }
+        level.onload = () => {
+            this.imageCount += 1;
+        }
+        playerB.onload = () => {
+            this.imageCount += 1;
+        }
+        emptyBox.onload = () => {
             this.imageCount += 1;
         }
         this.checkLoader();
