@@ -1,5 +1,5 @@
 /* global declarations */
-let totalImage = 12;
+let totalImage = 18;
 
 /* Image declaration and sourcing */
 let level1Img = new Image();
@@ -50,6 +50,30 @@ let emptyBox = new Image();
 emptyBox.src = './img/empty-box.png';
 emptyBox.id = 'empty-box';
 
+let bouncePu = new Image();
+bouncePu.src = './img/bounce-height.jpg';
+bouncePu.id = 'PU-bounce';
+
+let extraTimePu = new Image();
+extraTimePu.src = './img/clock.png';
+extraTimePu.id = 'PU-extra-time';
+
+let coinPu = new Image();
+coinPu.src = './img/coin.png';
+coinPu.id = 'PU-coin';
+
+let extraLifePu = new Image();
+extraLifePu.src = './img/extra-life.png';
+extraLifePu.id = 'PU-extra-life';
+
+let razorBulletPu = new Image();
+razorBulletPu.src = './img/razor-bullet.jpg';
+razorBulletPu.id = 'PU-razor-bullet';
+
+let spikeArrowPu = new Image();
+spikeArrowPu.src = './img/spike-arrow.jpg';
+spikeArrowPu.id = 'PU-spike-arrow';
+
 
 class Preloader {
     constructor() {
@@ -93,6 +117,24 @@ class Preloader {
             this.imageCount += 1;
         }
         emptyBox.onload = () => {
+            this.imageCount += 1;
+        }
+        bouncePu.onload = () => {
+            this.imageCount += 1;
+        }
+        extraTimePu.onload = () => {
+            this.imageCount += 1;
+        }
+        coinPu.onload = () => {
+            this.imageCount += 1;
+        }
+        extraLifePu.onload = () => {
+            this.imageCount += 1;
+        }
+        razorBulletPu.onload = () => {
+            this.imageCount += 1;
+        }
+        spikeArrowPu.onload = () => {
             this.imageCount += 1;
         }
         this.checkLoader();

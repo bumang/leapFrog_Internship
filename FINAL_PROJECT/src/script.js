@@ -124,8 +124,6 @@ class Game {
 
             }
             if (conditionX && conditionY) {
-                console.log(this.ball.position.y + this.ball.ballYellow.dH - 24);
-                console.log(PLAYER.y);
                 alert('collision detected');
                 this.life = this.life - 1;
 
@@ -170,6 +168,7 @@ class Game {
         this.ball.velocity.y = 0;
     }
 
+
 }
 
 class Character {
@@ -191,7 +190,8 @@ class Character {
             left: '',
             dW: 9,
             dH: BOUNDARIES.bottom - SPIKE_HEIGHT,
-            try: 5
+            try: 5,
+            startPoint: ''
         }
     }
 
