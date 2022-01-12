@@ -67,6 +67,7 @@ class Game {
                 this.character.moving = true;
             } else if (spacePressed == true) {
                 this.character.moving = true;
+                this.character.throwArrow('space');
             }
         }, false);
 
@@ -114,11 +115,20 @@ class Game {
         // this.ball.position.x + this.ball.ballYellow.dW == this.character.x + PLAYER_WIDTH 
         /* collision detection */
         this.detectCollision = () => {
-            const conditionY = this.ball.position.y >= PLAYER.y;
-            const conditionX = this.ball.position.x > this.character.x && this.ball.position.x < this.character.x + PLAYER_WIDTH;
-            if (conditionY && conditionX) {
-                // alert('collision detected');
+            let conditionX;
+            const conditionY = this.ball.position.y + this.ball.ballYellow.dH - 24 >= PLAYER.y;
+            if (this.ball.position.x > this.character.x + PLAYER_WIDTH) {
+                conditionX = (this.ball.position.x + this.ball.ballYellow.dW > this.character.x) && (this.ball.position.x < this.character.x + PLAYER_WIDTH);
+            } else {
+                conditionX = (this.ball.position.x + this.ball.ballYellow.dW - 24 > this.character.x) && (this.ball.position.x < this.character.x + PLAYER_WIDTH);
+
+            }
+            if (conditionX && conditionY) {
+                console.log(this.ball.position.y + this.ball.ballYellow.dH - 24);
+                console.log(PLAYER.y);
+                alert('collision detected');
                 this.life = this.life - 1;
+
 
 
             }
@@ -175,7 +185,13 @@ class Character {
             x: 9,
             y: 690,
             speed: 5,
-            error: 3
+            error: 3,
+            shoot: '',
+            top: '',
+            left: '',
+            dW: 9,
+            dH: BOUNDARIES.bottom - SPIKE_HEIGHT,
+            try: 5
         }
     }
 
@@ -199,7 +215,23 @@ class Character {
         if (!this.direction == '') {
             this.animateCharacter();
         }
-        this.throwArrow();
+
+        /* drawing arrow */
+        this.arrow.left = this.x + (PLAYER_WIDTH / 2) - this.arrow.error;
+        this.arrow.top = BOUNDARIES.bottom;
+        if (this.arrow.shoot == 'space') {
+            this.ctx.drawImage(arrow, 0, 0, this.arrow.x, this.arrow.y, this.arrow.left, this.arrow.top, this.arrow.dW, this.arrow.try);
+            this.arrow.try -= 30;
+            this.arrow.compare = Math.abs(-this.arrow.try);
+            if (this.arrow.compare >= this.arrow.dH) {
+                this.arrow.shoot = '';
+                this.arrow.try = 5;
+
+            }
+
+        }
+
+        /* drawing sprite */
         this.ctx.drawImage(playerSprite, PLAYER.width * this.frameX, PLAYER.height * this.frameY, PLAYER.width, PLAYER.height, this.x, PLAYER.y, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
 
@@ -208,15 +240,15 @@ class Character {
 
     }
     animateCharacter() {
-            if (this.frameX < 3 && this.moving) {
-                this.frameX++;
-            } else {
-                this.frameX = 0;
-            }
+        if (this.frameX < 3 && this.moving) {
+            this.frameX++;
+        } else {
+            this.frameX = 0;
         }
-        // this.x + (PLAYER_WIDTH / 2) - this.arrow.error
-    throwArrow() {
-        this.ctx.drawImage(arrow, 0, 0, this.arrow.x, this.arrow.y, this.x + (PLAYER_WIDTH / 2) - this.arrow.error, BOUNDARIES.top, this.arrow.x, BOUNDARIES.bottom - SPIKE_HEIGHT);
+    }
+
+    throwArrow(shoot) {
+        this.arrow.shoot = shoot;
     }
 }
 
@@ -295,7 +327,6 @@ class Background {
             this.ctx.fillStyle = this.spikes;
             this.ctx.fillRect(SIDE_BAR_WIDTH, 0, PLAYGROUND_WIDTH, SPIKE_HEIGHT);
         }
-        this.drawSpikes();
         this.ctx.drawImage(torch, 0, 0, this.torch.sW, this.torch.sH, this.torch.left1, this.torch.top, this.torch.dW, this.torch.dH);
         this.ctx.drawImage(torch, 0, 0, this.torch.sW, this.torch.sH, this.torch.left2, this.torch.top, this.torch.dW, this.torch.dH);
         this.ctx.drawImage(level, 0, 0, this.levelIndicator.sW, this.levelIndicator.sH, this.levelIndicator.left, this.levelIndicator.top, this.levelIndicator.dW, this.levelIndicator.dH);
@@ -329,6 +360,8 @@ class Background {
             this.ctx.fillText("LIFE :", this.box.lifeLeft - 60, this.box.lifeTop + 30);
         }
         this.lifeHeader();
+        this.drawSpikes();
+
     }
 }
 
