@@ -11,6 +11,7 @@ const PLAYGROUND_WIDTH = WIDTH - (SIDE_BAR_WIDTH * 2);
 const PLAYGROUND_HEIGHT = HEIGHT - BOTTOM_BAR_HEIGHT;
 const DEFAULT_POS_LEFT = (WIDTH / 2) - (PLAYER_WIDTH / 2);
 const DEFAULT_POS_TOP = HEIGHT - BOTTOM_BAR_HEIGHT - PLAYER_HEIGHT + 5;
+const BALL_DEAFAULT = 50;
 
 const BOUNDARIES = {
     left: SIDE_BAR_WIDTH,
@@ -43,132 +44,205 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
         this.ctx.imageSmoothingQuality = 'high';
         this.life = 3;
+        this.level = 1;
         this.score = 0;
+        this.pause = false;
+        this.ballArray = []
     }
 
     Play() {
-        /* adding background of level 1 */
-        this.background = new Background(this.ctx);
 
-        /* adding character */
-        this.character = new Character(this.ctx);
+            switch (this.level) {
+                case 1:
+                    /* adding ball */
+                    this.ballArray.push(new Ball({ ctx: this.ctx }));
+                    break;
 
-        /* adding ball */
-        this.ball = new Ball(this.ctx);
-
-        /* arrow key listeners */
-        document.addEventListener("keydown", (e) => {
-            keyDownHandler(e);
-            if (rightPressed == true) {
-                this.character.moveCharacter('right');
-                this.character.moving = true;
-            } else if (leftPressed == true) {
-                this.character.moveCharacter('left');
-                this.character.moving = true;
-            } else if (spacePressed == true) {
-                this.character.moving = true;
-                this.character.throwArrow('space');
+                case 2:
+                    this.ballArray.push(new Ball({ ctx: this.ctx, }));
+                    this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, }));
+                    break;
+                case 3:
+                    this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, dy: 10 }));
             }
-        }, false);
+            /* adding background of level 1 */
+            this.background = new Background(this.ctx);
 
-        document.addEventListener("keyup", (e) => {
-            keyUpHandler(e);
-            this.character.frameY = 3;
-            this.character.frameX = 0;
-            if (rightPressed == false && leftPressed == false) {
-                this.character.moveCharacter('');
-                this.character.moving = false;
-            }
-        }, false);
+            /* adding character */
+            this.character = new Character(this.ctx);
 
-        /* adding animation */
-        this.smoothAnimation = () => {
-            requestAnimationFrame(this.smoothAnimation);
-            now = Date.now();
-            elapsed = now - previous;
-            if (elapsed > fpsInterval) {
-                previous = now - (elapsed % fpsInterval)
+            /* arrow key listeners */
+            document.addEventListener("keydown", (e) => {
+                keyDownHandler(e);
+                if (rightPressed == true) {
+                    this.character.moveCharacter('right');
+                    this.character.moving = true;
+                } else if (leftPressed == true) {
+                    this.character.moveCharacter('left');
+                    this.character.moving = true;
+                }
+                if (spacePressed == true) {
+                    this.character.moving = true;
+                    this.character.throwArrow('space');
+                }
+            }, false);
+
+            document.addEventListener("keyup", (e) => {
+                keyUpHandler(e);
+                this.character.frameY = 3;
+                this.character.frameX = 0;
+                if (rightPressed == false && leftPressed == false) {
+                    this.character.moveCharacter('');
+                    this.character.moving = false;
+                }
+            }, false);
+
+            /* adding animation */
+            this.smoothAnimation = () => {
+                requestAnimationFrame(this.smoothAnimation);
                 now = Date.now();
                 elapsed = now - previous;
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.background.level1();
-                this.character.drawCharacter();
-                this.ball.level1Ball();
-                this.detectCollision();
-                this.levelIndicator();
-                this.lifeIndicator();
-                this.drawScore();
-
+                if (elapsed > fpsInterval) {
+                    previous = now - (elapsed % fpsInterval)
+                    now = Date.now();
+                    elapsed = now - previous;
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.background.level1();
+                    this.character.drawCharacter();
+                    this.ballArray.map((ball) => { ball.level1Ball() });
+                    this.detectCollisionPlayer();
+                    this.detectCollisionArrow();
+                    this.levelIndicator();
+                    this.lifeIndicator();
+                    this.drawScore();
+                    this.gameOver();
+                    this.checkTime();
+                }
             }
-
-        }
-        this.start = (fps) => {
-            fpsInterval = 1000 / fps;
-            previous = Date.now();
-            startTime = previous;
-            requestAnimationFrame(this.smoothAnimation);
-        }
-        this.end = () => {
-            cancelAnimationFrame(this.reqAnimationId)
-        }
-        this.start(12);
-        // this.ball.position.x + this.ball.ballYellow.dW == this.character.x + PLAYER_WIDTH 
-        /* collision detection */
-        this.detectCollision = () => {
-            let conditionX;
-            const conditionY = this.ball.position.y + this.ball.ballYellow.dH - 24 >= PLAYER.y;
-            if (this.ball.position.x > this.character.x + PLAYER_WIDTH) {
-                conditionX = (this.ball.position.x + this.ball.ballYellow.dW > this.character.x) && (this.ball.position.x < this.character.x + PLAYER_WIDTH);
-            } else {
-                conditionX = (this.ball.position.x + this.ball.ballYellow.dW - 24 > this.character.x) && (this.ball.position.x < this.character.x + PLAYER_WIDTH);
-
+            this.start = (fps) => {
+                fpsInterval = 1000 / fps;
+                previous = Date.now();
+                startTime = previous;
+                requestAnimationFrame(this.smoothAnimation);
             }
-            if (conditionX && conditionY) {
-                alert('collision detected');
-                this.life = this.life - 1;
-
-
-
+            this.end = () => {
+                cancelAnimationFrame(this.start());
             }
+            this.start(12);
         }
+        /* collision detection player*/
+    detectCollisionPlayer() {
+            for (let i = 0; i < this.ballArray.length; i++) {
+                let conditionX;
+                const conditionY = this.ballArray[i].position.y + this.ballArray[i].ballYellow.dH - 24 >= PLAYER.y;
+                if (this.ballArray[i].position.x > this.character.x + PLAYER_WIDTH - 15) {
+                    conditionX = (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW > this.character.x) && (this.ballArray[i].position.x < this.character.x + PLAYER_WIDTH - 15);
+                } else {
+                    conditionX = (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW - 24 > this.character.x) && (this.ballArray[i].position.x < this.character.x + PLAYER_WIDTH);
 
-        this.levelIndicator = () => {
-            this.ctx.font = "bolder 52px Comic Sans MS";
-            this.ctx.fillStyle = "red";
-            this.ctx.textAlign = "center";
-            this.ctx.fillText(this.ball.level, this.background.box.levelLeft + 30, this.background.box.levelTop + 43);
-        }
-
-        this.lifeIndicator = () => {
-            let indicator = {
-                SH: 19,
-                SW: PLAYER.width,
-                DH: 30,
-                DW: 40,
-                dTop: this.background.box.lifeTop + 5,
-                dLeft: this.background.box.lifeLeft + 5
-            }
-            for (let i = this.life; i > 0; i--) {
-                this.ctx.drawImage(playerSprite, 0, 0, indicator.SW, indicator.SH, indicator.dLeft, indicator.dTop, indicator.DW, indicator.DH);
-                indicator.dLeft += 40;
+                }
+                if (conditionX && conditionY) {
+                    alert('collision detected');
+                    this.life = this.life - 1;
+                    this.ballArray[i].position.x += 50;
+                }
             }
         }
+        /* collision detection Arrow */
+    detectCollisionArrow() {
+        let condX, condY;
 
-        this.drawScore = () => {
-            this.ctx.font = "bolder 32px Comic Sans MS";
-            this.ctx.fillStyle = "red";
-            this.ctx.textAlign = "center";
-            this.ctx.fillText(this.score, this.background.box.scoreLeft + this.background.box.scoreW - 100, this.background.box.scoreTop + 30);
+        for (let i = 0; i < this.ballArray.length; i++) {
+            for (let j = 0; j < this.character.arrow.startPoint.length; j++) {
+
+                if (this.character.arrow.startPoint.length > 0) {
+                    if (this.ballArray[i].position.x > this.character.arrow.startPoint[j].x + this.character.arrow.dW) {
+                        condX = (this.ballArray[i].position.x - 24 <= this.character.arrow.startPoint[j].x + this.character.arrow.dW) && (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW >= this.character.arrow.startPoint[j].x);
+                    } else {
+                        condX = (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW - 33 >= this.character.arrow.startPoint[j].x) && (this.ballArray[i].position.x <= this.character.arrow.startPoint[j].x + this.character.arrow.dW);
+
+                    }
+                    condY = this.ballArray[i].position.y + this.ballArray[i].ballYellow.dH + Math.abs(this.character.arrow.startPoint[j].try) - 63 >= PLAYGROUND_HEIGHT;
+
+                    if (condX && condY) {
+                        // alert("collision detected");
+                        this.score += 100;
+                        const removedBall = this.ballArray.splice(i, 1)[0];
+                        const ctx = this.ctx;
+                        const height = (removedBall.ballYellow.dH) / 2;
+                        const width = (removedBall.ballYellow.dW) / 2;
+                        const positionX = removedBall.position.x;
+                        const positionY = removedBall.position.y;
+                        const dx = removedBall.velocity.x;
+                        const dy = removedBall.velocity.y;
+                        if (removedBall.ballYellow.dW > 25) {
+                            this.ballArray.push(new Ball({ ctx, height, width, positionX: positionX + dx + 100, positionY: 400, dx, dy }),
+                                new Ball({ ctx, height, width, positionX: positionX - dx - 100, positionY: 400, dx: -dx, dy }));
+                        }
+
+                        if (this.ballArray.length == 0) {
+                            this.score += this.background.clock.time;
+                            this.level += 1;
+                            this.Play();
+                        }
+
+                    }
+                }
+            }
         }
 
 
+    }
+
+    levelIndicator() {
+        this.ctx.font = "bolder 52px Comic Sans MS";
+        this.ctx.fillStyle = "red";
+        this.ctx.textAlign = "center";
+        this.ctx.fillText(this.level, this.background.box.levelLeft + 30, this.background.box.levelTop + 43);
+    }
+
+    lifeIndicator() {
+        let indicator = {
+            SH: 19,
+            SW: PLAYER.width,
+            DH: 30,
+            DW: 40,
+            dTop: this.background.box.lifeTop + 5,
+            dLeft: this.background.box.lifeLeft + 5
+        }
+        for (let i = this.life; i > 0; i--) {
+            this.ctx.drawImage(playerSprite, 0, 0, indicator.SW, indicator.SH, indicator.dLeft, indicator.dTop, indicator.DW, indicator.DH);
+            indicator.dLeft += 40;
+        }
+    }
+
+    drawScore() {
+        this.ctx.font = "bolder 32px Comic Sans MS";
+        this.ctx.fillStyle = "red";
+        this.ctx.textAlign = "center";
+        this.ctx.fillText(this.score, this.background.box.scoreLeft + this.background.box.scoreW - 100, this.background.box.scoreTop + 30);
+    }
+    checkTime() {
+        if (this.background.clock.time <= this.background.clock.timeUp) {
+
+            this.life -= 1;
+            this.gameReset();
+        }
     }
     gameOver() {
-        this.ball.velocity.x = 0;
-        this.ball.velocity.y = 0;
+        if (this.life == 0) {
+            this.ballArray = [new Ball({ ctx: this.ctx })];
+            this.character = new Character(this.ctx);
+            this.life = 3;
+            this.background = new Background(this.ctx);
+            this.level = 1;
+            this.score = 0;
+        }
     }
-
-
+    gameReset() {
+        this.ballArray = [new Ball({ ctx: this.ctx })];
+        this.background = new Background(this.ctx);
+    }
 }
 
 class Character {
@@ -191,7 +265,8 @@ class Character {
             dW: 9,
             dH: BOUNDARIES.bottom - SPIKE_HEIGHT,
             try: 5,
-            startPoint: ''
+            startPoint: [],
+            compare: 0
         }
     }
 
@@ -217,18 +292,16 @@ class Character {
         }
 
         /* drawing arrow */
-        this.arrow.left = this.x + (PLAYER_WIDTH / 2) - this.arrow.error;
-        this.arrow.top = BOUNDARIES.bottom;
-        if (this.arrow.shoot == 'space') {
-            this.ctx.drawImage(arrow, 0, 0, this.arrow.x, this.arrow.y, this.arrow.left, this.arrow.top, this.arrow.dW, this.arrow.try);
-            this.arrow.try -= 30;
-            this.arrow.compare = Math.abs(-this.arrow.try);
+        for (let i = 0; i <= this.arrow.startPoint.length - 1; i++) {
+            let leftPositionArrow = this.arrow.startPoint[i].x + (PLAYER_WIDTH / 2) - this.arrow.error;
+            this.arrow.top = BOUNDARIES.bottom;
+            this.ctx.drawImage(arrow, 0, 0, this.arrow.x, this.arrow.y, leftPositionArrow, this.arrow.top, this.arrow.dW, this.arrow.startPoint[i].try);
+            this.arrow.startPoint[i].try -= 30;
+            this.arrow.compare = Math.abs(-this.arrow.startPoint[i].try);
             if (this.arrow.compare >= this.arrow.dH) {
                 this.arrow.shoot = '';
-                this.arrow.try = 5;
-
+                this.arrow.startPoint.splice(i, 1);
             }
-
         }
 
         /* drawing sprite */
@@ -249,10 +322,12 @@ class Character {
 
     throwArrow(shoot) {
         this.arrow.shoot = shoot;
+        if (this.arrow.startPoint.length == 0) {
+
+            this.arrow.startPoint.push({ x: this.x, try: 5 });
+        }
     }
 }
-
-
 
 class Background {
     constructor(ctx) {
@@ -313,9 +388,8 @@ class Background {
             boxW: PLAYGROUND_WIDTH,
             boxH: 40,
             timeUp: 2,
-            timeSpeed: 5
+            timeSpeed: 2
         }
-
     }
     level1() {
         this.ctx.drawImage(level1Img, SIDE_BAR_WIDTH, 0, PLAYGROUND_WIDTH, PLAYGROUND_HEIGHT);
@@ -361,32 +435,29 @@ class Background {
         }
         this.lifeHeader();
         this.drawSpikes();
-
     }
 }
 
 class Ball {
-    constructor(ctx) {
+    constructor({ ctx, width, height, dx, dy, positionX, positionY }) {
         this.ctx = ctx;
         this.ballYellow = {
             orgiWidth: 74,
             orgiHeight: 74,
-            dW: 50,
-            dH: 50,
+            dW: width || 50,
+            dH: height || 50,
             top: 300,
             left: SIDE_BAR_WIDTH
         }
         this.position = {
-            x: SIDE_BAR_WIDTH,
-            y: 300
+            x: positionX || SIDE_BAR_WIDTH,
+            y: positionY || 300
         }
         this.velocity = {
-            x: 5,
-            y: 18
+            x: dx || 5,
+            y: dy || 18
         }
         this.gravity = 2;
-
-        this.level = 1;
     }
 
     level1Ball() {
