@@ -31,9 +31,20 @@ const PLAYER = {
     speed: 14,
     moving: false
 }
+
+const MIDDLE_BAR = {
+    sW: 156,
+    sH: 1242,
+    dW: 80,
+    dH: PLAYGROUND_HEIGHT - PLAYER_HEIGHT,
+    top: 0,
+    left: (WIDTH / 2) - 40,
+
+}
 let rightPressed = false;
 let leftPressed = false;
 let spacePressed = false;
+
 let fps, fpsInterval, startTime, previous, now, elapsed;
 
 
@@ -44,17 +55,18 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
         this.ctx.imageSmoothingQuality = 'high';
         this.life = 3;
-        this.level = 6;
+        this.level = 1;
         this.score = 0;
         this.pause = false;
-        this.ballArray = []
+        this.ballArray = [];
+        this.powerUpArray = [];
     }
 
     Play() {
             this.createBalls();
 
             /* adding background of level 1 */
-            this.background = new Background(this.ctx);
+            this.background = new Background(this.ctx, this.level);
 
             /* adding character */
             this.character = new Character(this.ctx);
@@ -99,6 +111,12 @@ class Game {
                     elapsed = now - previous;
                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                     this.background.level1();
+                    if (this.level >= 7) {
+                        this.background.middleBar = true;
+                        this.background.level7();
+                        this.detectCollisionMiddleBar()
+                    }
+                    this.powerUpArray.map((power) => { power.draw() });
                     this.character.drawCharacter();
                     this.ballArray.map((ball) => { ball.level1Ball() });
                     this.detectCollisionPlayer();
@@ -108,6 +126,7 @@ class Game {
                     this.drawScore();
                     this.gameOver();
                     this.checkTime();
+
                 }
             }
             this.start = (fps) => {
@@ -123,28 +142,52 @@ class Game {
         }
         /* collision detection player*/
     detectCollisionPlayer() {
-            for (let i = 0; i < this.ballArray.length; i++) {
-                let conditionX;
-                const conditionY = this.ballArray[i].position.y + this.ballArray[i].ballYellow.dH - 24 >= PLAYER.y;
-                if (this.ballArray[i].position.x > this.character.x + PLAYER_WIDTH - 15) {
-                    conditionX = (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW > this.character.x) && (this.ballArray[i].position.x < this.character.x + PLAYER_WIDTH - 15);
-                } else {
-                    conditionX = (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW - 24 > this.character.x) && (this.ballArray[i].position.x < this.character.x + PLAYER_WIDTH);
+        /* collision detection of player and ball  */
+        for (let i = 0; i < this.ballArray.length; i++) {
+            let conditionX;
+            const conditionY = this.ballArray[i].position.y + this.ballArray[i].ballYellow.dH - 24 >= PLAYER.y;
+            if (this.ballArray[i].position.x > this.character.x + PLAYER_WIDTH - 15) {
+                conditionX = (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW > this.character.x) && (this.ballArray[i].position.x < this.character.x + PLAYER_WIDTH - 15);
+            } else {
+                conditionX = (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW - 24 > this.character.x) && (this.ballArray[i].position.x < this.character.x + PLAYER_WIDTH);
 
-                }
-                if (conditionX && conditionY) {
-                    // alert('collision detected');
-                    this.life = this.life - 1;
-                    this.ballArray[i].position.x += 50;
-                    if (this.ballArray[i].position.x < BOUNDARIES.left) {
-                        this.ballArray[i].position.x = BOUNDARIES.left;
-                    } else if (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW > BOUNDARIES.right) {
-                        this.ballArray[i].position.x = BOUNDARIES.right;
-                    }
+            }
+            if (conditionX && conditionY) {
+                // alert('collision detected');
+                this.life = this.life - 1;
+                this.ballArray[i].position.x += 40;
+                this.ballArray[i].position.y -= 20;
+                if (this.ballArray[i].position.x < BOUNDARIES.left) {
+                    this.ballArray[i].position.x = BOUNDARIES.left;
+                } else if (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW > BOUNDARIES.right) {
+                    this.ballArray[i].position.x = BOUNDARIES.right;
                 }
             }
         }
-        /* collision detection Arrow */
+        // if(this.ballArray[i].position.y<=this.background.midBarSpecs.dH)
+
+    }
+    detectCollisionMiddleBar() {
+        /* level 7 wall collision detection*/
+        if (this.background.middleBar) {
+            for (let i = 0; i < this.ballArray.length; i++) {
+                const conditionY = (this.ballArray[i].position.y + this.ballArray[i].ballYellow.dH <= this.background.midBarSpecs.dH);
+                const conditionX = (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW > this.background.midBarSpecs.left) && (this.ballArray[i].position.x < this.background.midBarSpecs.left + this.background.midBarSpecs.dW);
+                const insideGapY = this.ballArray[i].position.y <= this.background.midBarSpecs.dH;
+                const insideGapX = (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW - 5 > this.background.midBarSpecs.left) && (this.ballArray[i].position.x + 5 < this.background.midBarSpecs.left + this.background.midBarSpecs.dW);
+                if (insideGapX && insideGapY) {
+                    this.ballArray[i].position.y = this.background.midBarSpecs.dH;
+                    this.ballArray[i].velocity.y = -this.ballArray[i].velocity.y;
+                }
+                if (conditionX && conditionY) {
+                    this.ballArray[i].velocity.x = -this.ballArray[i].velocity.x;
+
+                }
+            }
+        }
+    }
+
+    /* collision detection Arrow */
     detectCollisionArrow() {
         let condX, condY;
 
@@ -161,6 +204,7 @@ class Game {
                     condY = this.ballArray[i].position.y + this.ballArray[i].ballYellow.dH + Math.abs(this.character.arrow.startPoint[j].try) - 63 >= PLAYGROUND_HEIGHT;
 
                     if (condX && condY) {
+
                         // alert("collision detected");
                         this.score += 100;
                         const removedBall = this.ballArray.splice(i, 1)[0];
@@ -172,33 +216,39 @@ class Game {
                         const dx = removedBall.velocity.x;
                         const dy = removedBall.velocity.y;
 
+                        /* making ball go same direction after spliting */
+                        const speedX = dx > 0 ? dx : -dx;
 
 
-                        // if (this.ballArray.indexOf(this.ballArray[i]) + 1 % 2 == 0) {
-                        //     console.log('hello from even ball')
-                        // }
+                        /* pushing power-up to an array */
+                        this.powerUpArray.push(...removedBall.powerUp);
+                        removedBall.powerUp.map((power) => {
+                            power.draw(positionX, positionY);
+                        })
+
+
                         /* outside wall conditions  */
                         let checkBallPositionLeft = positionX - 100;
                         let checkBallPositionRight = positionX + 100;
-
                         if (checkBallPositionLeft < BOUNDARIES.left) {
                             checkBallPositionLeft = BOUNDARIES.left + width;
                         } else if (checkBallPositionRight + width > BOUNDARIES.right) {
                             checkBallPositionRight = BOUNDARIES.right - width;
                         }
+
                         /* making width and height even */
                         if (width % 2 !== 0) {
                             width += 1;
                             height += 1;
-                            console.log(width, height);
                             if (removedBall.ballYellow.dW > 26) {
-                                this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx, dy }),
-                                    new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -dx, dy }));
+
+                                this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx: speedX, dy }),
+                                    new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -speedX, dy }));
                             }
                         } else {
                             if (removedBall.ballYellow.dW > 26) {
-                                this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx, dy }),
-                                    new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -dx, dy }));
+                                this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx: speedX, dy }),
+                                    new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -speedX, dy }));
                             }
                         }
                         /* case for level completion */
@@ -213,12 +263,17 @@ class Game {
             }
         }
     }
+
+    /* collision detection for power ups */
+    collisionPowerUp() {
+
+    }
     createBalls() {
         /* adding levels */
         this.ballArray = [];
         switch (this.level) {
             case 1:
-                this.ballArray.push(new Ball({ ctx: this.ctx }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, powerUpType: [`coin`] }));
                 break;
 
             case 2:
@@ -241,12 +296,28 @@ class Game {
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250 }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT + MARGIN_OF_ERROR, }));
                 break;
+            case 7:
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionY: 450 }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 450 }));
+                break;
+            case 8:
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250 }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 350 }));
+                break;
+            case 9:
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 75, height: 75, positionY: 450, dy: 24 }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 75, height: 75, positionY: 350, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT }));
+                break;
+            case 10:
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 400, dy: 24 }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 400, dy: 24, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT }));
+
+
+
 
 
         }
     }
-
-
 
     levelIndicator() {
         this.ctx.font = "bolder 52px Comic Sans MS";
@@ -388,9 +459,11 @@ class Character {
 }
 
 class Background {
-    constructor(ctx) {
+    constructor(ctx, level) {
+        this.level = level;
         this.ctx = ctx;
         this.ctx.imageSmoothingQuality = 'high';
+        this.spikeHeight = SPIKE_HEIGHT
         this.torch = {
             sW: 18,
             sH: 53,
@@ -448,6 +521,13 @@ class Background {
             timeUp: 2,
             timeSpeed: 2
         }
+        this.middleBar = false;
+        this.midBarSpecs = {
+            dW: 80,
+            dH: PLAYGROUND_HEIGHT - PLAYER_HEIGHT,
+            top: 0,
+            left: (WIDTH / 2) - 40,
+        }
     }
     level1() {
         this.ctx.drawImage(level1Img, SIDE_BAR_WIDTH, 0, PLAYGROUND_WIDTH, PLAYGROUND_HEIGHT);
@@ -457,7 +537,7 @@ class Background {
         this.drawSpikes = () => {
             this.spikes = this.ctx.createPattern(spike, 'repeat-x');
             this.ctx.fillStyle = this.spikes;
-            this.ctx.fillRect(SIDE_BAR_WIDTH, 0, PLAYGROUND_WIDTH, SPIKE_HEIGHT);
+            this.ctx.fillRect(SIDE_BAR_WIDTH, 0, PLAYGROUND_WIDTH, this.spikeHeight);
         }
         this.ctx.drawImage(torch, 0, 0, this.torch.sW, this.torch.sH, this.torch.left1, this.torch.top, this.torch.dW, this.torch.dH);
         this.ctx.drawImage(torch, 0, 0, this.torch.sW, this.torch.sH, this.torch.left2, this.torch.top, this.torch.dW, this.torch.dH);
@@ -493,11 +573,17 @@ class Background {
         }
         this.lifeHeader();
         this.drawSpikes();
+
+
+    }
+    level7() {
+        this.ctx.drawImage(backLeftImg, 0, 0, MIDDLE_BAR.sW, MIDDLE_BAR.sH, this.midBarSpecs.left, this.midBarSpecs.top, this.midBarSpecs.dW, this.midBarSpecs.dH)
+
     }
 }
 
 class Ball {
-    constructor({ ctx, width, height, dx, dy, positionX, positionY }) {
+    constructor({ ctx, width, height, dx, dy, positionX, positionY, powerUpType }) {
         this.ctx = ctx;
         this.ballYellow = {
             orgiWidth: 74,
@@ -516,6 +602,10 @@ class Ball {
             y: dy || 18
         }
         this.gravity = 2;
+
+        this.powerUp = powerUpType ? powerUpType.map((power) => {
+            return new PowerUp({ ctx: this.ctx, power });
+        }) : [];
     }
 
     level1Ball() {
@@ -547,8 +637,11 @@ class Ball {
 }
 
 class PowerUp {
-    constructor(ctx) {
+    constructor({ ctx, power }) {
+        this.power = power;
         this.ctx = ctx;
+        this.top = 0;
+        this.left = 0;
         this.coin = {
             sW: 319,
             sH: 319,
@@ -589,10 +682,49 @@ class PowerUp {
             top: 0,
             left: 0
         }
+        this.timeStart = '';
+        this.timeUp = false;
+
     }
 
-    coinPu() {
-        this.ctx.drawImage(coinPu, 0, 0, this.coin.sW, this.coin.sH, this.coin.top, this.coin.left, this.coin.dW, this.coin.dH);
+    draw(positionX, positionY) {
+        if (this.timeStart) {
+            let elapsed = Date.now() - this.timeStart;
+            console.log(elapsed)
+            if (elapsed >= 5000) {
+                this.timeUp = true;
+                return;
+            }
+        }
+        if (positionX) {
+            this.left = positionX
+        }
+        if (positionY) {
+            this.top = positionY
+
+        } else {
+
+            this.top += 10;
+
+        }
+
+
+        /* boundary check */
+        if (this.top + this.coin.dH >= BOUNDARIES.bottom) {
+            this.top = BOUNDARIES.bottom - this.coin.dH;
+            if (!this.timeStart) {
+
+                this.timeStart = Date.now();
+            }
+        }
+        if (this.power == 'coin') {
+            this.coinPu(positionX, positionY);
+
+        }
+    }
+
+    coinPu(positionX, positionY) {
+        this.ctx.drawImage(coinPu, 0, 0, this.coin.sW, this.coin.sH, this.left, this.top, this.coin.dW, this.coin.dH);
     }
     extraTimePu() {
         this.ctx.drawImage(extraTimePu, 0, 0, this.extraTime.sW, this.extraTime.sH, this.extraTime.top, this.extraTime.left, this.extraTime.dW, this.extraTime.dH);
