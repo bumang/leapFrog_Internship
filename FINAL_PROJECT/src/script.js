@@ -58,11 +58,18 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
         this.ctx.imageSmoothingQuality = 'high';
         this.life = 3;
-        this.level = 10;
+        this.level = 1;
         this.score = 0;
         this.pause = false;
         this.ballArray = [];
         this.powerUpArray = [];
+    }
+
+
+    menuPage() {
+        this.ctx.draw
+
+        this.Play()
     }
 
     Play() {
@@ -131,6 +138,8 @@ class Game {
                     this.checkTime();
                     this.collisionPowerUp();
                     this.collisionRazorBullet();
+                    this.updateHighScore();
+
 
                 }
             }
@@ -500,10 +509,17 @@ class Game {
         }
     }
     gameReset(level) {
-        // level = this.level;
         this.background = new Background(this.ctx);
         this.createBalls();
 
+    }
+    updateHighScore() {
+        this.highScore = parseInt(localStorage.getItem("highscore"));
+        console.log(this.highScore);
+        if (this.highScore < this.score) {
+            localStorage.setItem("highscore", this.score);
+            // document.querySelector(".board-high-score").innerText = player.score;
+        }
     }
 }
 
@@ -875,7 +891,6 @@ class PowerUp {
         // }
         switch (this.power) {
             case `coin`:
-                console.log("hello from coin")
                 this.coinPu(positionX, positionY);
                 break;
             case `spike`:

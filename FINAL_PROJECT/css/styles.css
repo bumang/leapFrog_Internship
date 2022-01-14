@@ -1,11 +1,28 @@
-#game-wrapper {
-    width: 1500px;
-    height: 800px;
-    margin: 50px auto;
-}
-
-canvas {
-    /* width: 1500px;
-    height: 800px; */
-    border: 1px solid black;
-}
+    #game-wrapper {
+        width: 1500px;
+        height: 800px;
+        margin: 50px auto;
+        position: relative;
+    }
+    
+    canvas {
+        border: 1px solid black;
+    }
+    
+    .pre-loader {
+        position: fixed;
+        left: 200px;
+        width: 1500px;
+        height: 800px;
+        background-color: #686b69;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+    
+    h1 {
+        font-size: 4rem;
+        color: white;
+        font-weight: bolder;
+    }

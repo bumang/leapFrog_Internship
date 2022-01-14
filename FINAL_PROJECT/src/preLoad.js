@@ -80,14 +80,18 @@ bullet.id = 'PU-bullet';
 
 
 
+
+
+
 class Preloader {
     constructor() {
         this.imageCount = 0;
-        this.preLoader = document.querySelector('#pre-loader');
+        this.preLoader = document.querySelector('.pre-loader');
+
 
     }
-
     loadImg() {
+
         level1Img.onload = () => {
             this.imageCount += 1;
         }
@@ -153,15 +157,38 @@ class Preloader {
             if (this.imageCount == totalImage) {
                 clearInterval(checker);
                 var game = new Game();
-                game.Play();
+                game.menuPage();
             }
 
         }, 100);
+        this.removePreLoader();
 
     }
+    removePreLoader() {
 
+        this.preLoader.style.display = 'none';
+    }
 }
 
 
 var preloader = new Preloader();
 preloader.loadImg();
+
+// let checkPreloader = setInterval(() => {
+//     if (assetsLoadingLeft === 0) {
+//         clearInterval(checkPreloader);
+
+//         document.querySelector(".start-menu").style.display = "flex";
+
+//         let count = 100;
+//         let removePreloader = setInterval(() => {
+//             if (count <= 0) {
+//                 clearInterval(removePreloader);
+//                 preloader.style.display = "none";
+//             } else {
+//                 count -= 2;
+//                 preloader.style.opacity = count + "%";
+//             }
+//         }, 10);
+//     }
+// }, 100);
