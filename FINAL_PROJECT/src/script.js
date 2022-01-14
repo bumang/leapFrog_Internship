@@ -140,6 +140,7 @@ class Game {
                     this.checkTime();
                     this.collisionPowerUp();
                     this.collisionRazorBullet();
+                    this.gameFinised();
                 }
             }
             this.start = (fps) => {
@@ -525,13 +526,7 @@ class Game {
         }
     }
 
-    gameFinised() {
-        if (this.level == 10) {
-            if (this.ballArray.length == 0) {
-                preloader.menuPage();
-            }
-        }
-    }
+
 }
 
 class Character {

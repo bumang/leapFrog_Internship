@@ -32,3 +32,12 @@
         font-size: 2rem;
         margin-bottom: 15px;
     }
+    
+    button {
+        padding: 20px;
+        margin: 20px;
+    }
+    
+    .high-score {
+        font-size: 3rem;
+    }

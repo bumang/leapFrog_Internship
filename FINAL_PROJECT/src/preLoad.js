@@ -179,7 +179,7 @@ class Preloader {
         if (!getScore) {
             localStorage.setItem("highScore", "0");
         }
-        putHighScore.innerHTML = 'HIGH SCORE:' + getScore;
+        putHighScore.innerHTML = 'HIGH SCORE : ' + getScore;
     }
 
     menuPage() {
