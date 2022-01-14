@@ -12,6 +12,9 @@ const PLAYGROUND_HEIGHT = HEIGHT - BOTTOM_BAR_HEIGHT;
 const DEFAULT_POS_LEFT = (WIDTH / 2) - (PLAYER_WIDTH / 2);
 const DEFAULT_POS_TOP = HEIGHT - BOTTOM_BAR_HEIGHT - PLAYER_HEIGHT + 5;
 const BALL_DEAFAULT = 50;
+const POWERUP_DEFAULT_HEIGHT = 40;
+const POWERUP_DEFAULT_WIDTH = 40;
+
 
 const BOUNDARIES = {
     left: SIDE_BAR_WIDTH,
@@ -55,7 +58,7 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
         this.ctx.imageSmoothingQuality = 'high';
         this.life = 3;
-        this.level = 1;
+        this.level = 10;
         this.score = 0;
         this.pause = false;
         this.ballArray = [];
@@ -126,6 +129,8 @@ class Game {
                     this.drawScore();
                     this.gameOver();
                     this.checkTime();
+                    this.collisionPowerUp();
+                    this.collisionRazorBullet();
 
                 }
             }
@@ -190,10 +195,8 @@ class Game {
     /* collision detection Arrow */
     detectCollisionArrow() {
         let condX, condY;
-
         for (let i = 0; i < this.ballArray.length; i++) {
             for (let j = 0; j < this.character.arrow.startPoint.length; j++) {
-
                 if (this.character.arrow.startPoint.length > 0) {
                     if (this.ballArray[i].position.x > this.character.arrow.startPoint[j].x + this.character.arrow.dW) {
                         condX = (this.ballArray[i].position.x - 24 <= this.character.arrow.startPoint[j].x + this.character.arrow.dW) && (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW >= this.character.arrow.startPoint[j].x);
@@ -204,6 +207,8 @@ class Game {
                     condY = this.ballArray[i].position.y + this.ballArray[i].ballYellow.dH + Math.abs(this.character.arrow.startPoint[j].try) - 63 >= PLAYGROUND_HEIGHT;
 
                     if (condX && condY) {
+                        /* power up spike arrow */
+                        this.character.arrow.startPoint.splice(j, 1);
 
                         // alert("collision detected");
                         this.score += 100;
@@ -242,13 +247,13 @@ class Game {
                             height += 1;
                             if (removedBall.ballYellow.dW > 26) {
 
-                                this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx: speedX, dy }),
-                                    new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -speedX, dy }));
+                                this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx: speedX, dy, powerUpType: [`coin`] }),
+                                    new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -speedX, dy, powerUpType: [`coin`] }));
                             }
                         } else {
                             if (removedBall.ballYellow.dW > 26) {
-                                this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx: speedX, dy }),
-                                    new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -speedX, dy }));
+                                this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx: speedX, dy, powerUpType: [`coin`] }),
+                                    new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -speedX, dy, powerUpType: [`coin`] }));
                             }
                         }
                         /* case for level completion */
@@ -264,8 +269,136 @@ class Game {
         }
     }
 
-    /* collision detection for power ups */
+    /* collision detection for power ups*/
     collisionPowerUp() {
+            for (let i = 0; i < this.powerUpArray.length; i++) {
+                if (!this.powerUpArray[i].timeUp) {
+                    const conditionX = (this.powerUpArray[i].left < this.character.x + PLAYER_WIDTH - MARGIN_OF_ERROR) && (this.powerUpArray[i].left + POWERUP_DEFAULT_WIDTH - 20 > this.character.x);
+                    const conditionY = this.powerUpArray[i].top + POWERUP_DEFAULT_HEIGHT > PLAYER.y + MARGIN_OF_ERROR + 5;
+                    if (conditionX && conditionY) {
+                        switch (this.powerUpArray[i].power) {
+                            case `coin`:
+                                this.score += 100;
+                                if (!this.powerUpArray.length == 0) {
+                                    this.powerUpArray.splice(i, 1);
+                                }
+                                break;
+                            case `spike`:
+                                let checkLevelSpike = this.level;
+                                this.character.isSpike = true;
+                                if (!this.powerUpArray.length == 0) {
+                                    this.powerUpArray.splice(i, 1);
+                                }
+                                if (checkLevelSpike < this.level) {
+                                    this.character.isSpike = false;
+                                }
+                                break;
+                            case `razorBullet`:
+                                let checkLevelRazor = this.level;
+                                this.character.isRazorBullet = true;
+                                if (!this.powerUpArray.length == 0) {
+                                    this.powerUpArray.splice(i, 1);
+                                }
+                                if (checkLevelRazor < this.level) {
+                                    this.character.isRazorBullet = false;
+                                }
+                                break;
+                            case `health`:
+                                this.life += 1;
+                                if (!this.powerUpArray.length == 0) {
+                                    this.powerUpArray.splice(i, 1);
+                                }
+                                break;
+                            case 'time':
+                                this.background.clock.time += 200;
+                                if (!this.powerUpArray.length == 0) {
+                                    this.powerUpArray.splice(i, 1);
+                                }
+                                break;
+                            case 'bounceUp':
+                                let checkLevelBounceUp = this.level;
+                                for (let i = 0; i < this.ballArray.length; i++) {
+                                    this.ballArray[i].position.y -= 20;
+                                }
+                                this.powerUpArray.splice(i, 1);
+                                if (checkLevelBounceUp < this.level) {
+                                    this.character.isRazorBullet = false;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        /* collision detection for special bullet power up */
+    collisionRazorBullet() {
+        let condX, condY;
+        for (let i = 0; i < this.ballArray.length; i++) {
+            for (let j = 0; j < this.character.bullets.length; j++) {
+                if (this.ballArray[i].position.x > this.character.bullets[j].x + this.character.bullet.dW) {
+                    condX = (this.ballArray[i].position.x <= this.character.bullets[j].x + this.character.bullet.dW) && (this.ballArray[i].position.x + this.ballArray[i].ballYellow.dW >= this.character.bullets[j].x);
+                } else {
+                    condX = (this.ballArray[i].position.x >= this.character.bullets[j].x) && (this.ballArray[i].position.x <= this.character.bullets[j].x + this.character.bullet.dW);
+                }
+                // + this.ballArray[i].ballYellow.dW
+                condY = this.ballArray[i].position.y >= Math.abs(this.character.bullets[j].y);
+                // + this.ballArray[i].ballYellow.dH
+                if (condX && condY) {
+                    // alert("collision detected");
+                    this.score += 100;
+                    const removedBall = this.ballArray.splice(i, 1)[0];
+                    const ctx = this.ctx;
+                    let height = (removedBall.ballYellow.dH) / 2;
+                    let width = (removedBall.ballYellow.dW) / 2;
+                    const positionX = removedBall.position.x;
+                    const positionY = removedBall.position.y;
+                    const dx = removedBall.velocity.x;
+                    const dy = removedBall.velocity.y;
+
+                    /* making ball go same direction after spliting */
+                    const speedX = dx > 0 ? dx : -dx;
+
+                    /* pushing power-up to an array */
+                    this.powerUpArray.push(...removedBall.powerUp);
+                    removedBall.powerUp.map((power) => {
+                        power.draw(positionX, positionY);
+                    })
+
+
+                    /* outside wall conditions  */
+                    let checkBallPositionLeft = positionX - 100;
+                    let checkBallPositionRight = positionX + 100;
+                    if (checkBallPositionLeft < BOUNDARIES.left) {
+                        checkBallPositionLeft = BOUNDARIES.left + width;
+                    } else if (checkBallPositionRight + width > BOUNDARIES.right) {
+                        checkBallPositionRight = BOUNDARIES.right - width;
+                    }
+
+
+                    if (width % 2 !== 0) {
+                        width += 1;
+                        height += 1;
+                        if (removedBall.ballYellow.dW > 26) {
+
+                            this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx: speedX, dy, powerUpType: [`coin`] }),
+                                new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -speedX, dy, powerUpType: [`coin`] }));
+                        }
+                    } else {
+                        if (removedBall.ballYellow.dW > 26) {
+                            this.ballArray.push(new Ball({ ctx, height, width, positionX: checkBallPositionRight, positionY: positionY + 60, dx: speedX, dy, powerUpType: [`coin`] }),
+                                new Ball({ ctx, height, width, positionX: checkBallPositionLeft, positionY: positionY + 60, dx: -speedX, dy, powerUpType: [`coin`] }));
+                        }
+                    }
+                    /* case for level completion */
+                    if (this.ballArray.length == 0) {
+                        this.score += this.background.clock.time;
+                        this.level += 1;
+                        this.Play();
+                    }
+                }
+
+            }
+        }
 
     }
     createBalls() {
@@ -277,41 +410,41 @@ class Game {
                 break;
 
             case 2:
-                this.ballArray.push(new Ball({ ctx: this.ctx, }));
-                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, powerUpType: [`health`] }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, powerUpType: [`razorBullet`] }));
                 break;
             case 3:
-                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250 }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250, powerUpType: [`spike`] }));
                 break;
             case 4:
-                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 450, dy: 24 }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 450, dy: 24, powerUpType: [`bounceUp`] }));
                 break;
             case 5:
-                this.ballArray.push(new Ball({ ctx: this.ctx, }));
-                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: SIDE_BAR_WIDTH + BALL_DEAFAULT * 2, positionY: 400 }));
-                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, }));
-                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 400 }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, powerUpType: [`health`] }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: SIDE_BAR_WIDTH + BALL_DEAFAULT * 2, positionY: 400, powerUpType: [`spike`] }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, powerUpType: [`time`] }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 400, powerUpType: [`time`] }));
                 break;
             case 6:
-                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250 }));
-                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT + MARGIN_OF_ERROR, }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250, powerUpType: [`health`] }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT + MARGIN_OF_ERROR, powerUpType: [`razorBullet`] }));
                 break;
             case 7:
-                this.ballArray.push(new Ball({ ctx: this.ctx, positionY: 450 }));
-                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 450 }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionY: 450, powerUpType: [`spike`] }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 450, powerUpType: [`health`] }));
                 break;
             case 8:
-                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250 }));
-                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 350 }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250, powerUpType: [`spike`] }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 350, powerUpType: [`time`] }));
                 break;
             case 9:
-                this.ballArray.push(new Ball({ ctx: this.ctx, width: 75, height: 75, positionY: 450, dy: 24 }));
-                this.ballArray.push(new Ball({ ctx: this.ctx, width: 75, height: 75, positionY: 350, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 75, height: 75, positionY: 450, dy: 24, powerUpType: [`razorBullet`] }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 75, height: 75, positionY: 350, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT, powerUpType: [`health`] }));
                 break;
             case 10:
-                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 400, dy: 24 }));
-                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 400, dy: 24, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT }));
-
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 400, dy: 24, powerUpType: [`spike`] }));
+                this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 400, dy: 24, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT, powerUpType: [`time`] }));
+                break;
 
 
 
@@ -376,6 +509,8 @@ class Game {
 
 class Character {
     constructor(ctx) {
+        this.isRazorBullet = false;
+        this.isSpike = false;
         this.direction = '';
         this.ctx = ctx;
         this.moving = false;
@@ -383,6 +518,7 @@ class Character {
         this.frameY = PLAYER.frameY;
         this.frameX = PLAYER.frameX;
         this.ctx.imageSmoothingQuality = 'high';
+        this.bullets = [];
         this.arrow = {
             x: 9,
             y: 690,
@@ -396,6 +532,12 @@ class Character {
             try: 5,
             startPoint: [],
             compare: 0
+        }
+        this.bullet = {
+            sW: 282,
+            sH: 1281,
+            dW: 20,
+            dH: 50
         }
     }
 
@@ -427,12 +569,25 @@ class Character {
             this.ctx.drawImage(arrow, 0, 0, this.arrow.x, this.arrow.y, leftPositionArrow, this.arrow.top, this.arrow.dW, this.arrow.startPoint[i].try);
             this.arrow.startPoint[i].try -= 30;
             this.arrow.compare = Math.abs(-this.arrow.startPoint[i].try);
-            if (this.arrow.compare >= this.arrow.dH) {
+            if (this.arrow.compare >= this.arrow.dH && !this.isSpike) {
                 this.arrow.shoot = '';
                 this.arrow.startPoint.splice(i, 1);
+            } else if (this.arrow.compare >= this.arrow.dH && this.isSpike) {
+                this.arrow.startPoint[i].try += 30;
+
+
             }
         }
-
+        /* power up bullet */
+        for (let i = 0; i <= this.bullets.length - 1; i++) {
+            let leftPositionBullet = this.bullets[i].x + (PLAYER_WIDTH / 2) - MARGIN_OF_ERROR;
+            this.ctx.drawImage(bullet, 0, 0, this.bullet.sW, this.bullet.sH, leftPositionBullet, this.bullets[i].y, this.bullet.dW, this.bullet.dH);
+            this.bullets[i].y -= 40;
+            if (this.bullets[i].y <= SPIKE_HEIGHT) {
+                this.arrow.shoot = '';
+                this.bullets.splice(i, 1);
+            }
+        }
         /* drawing sprite */
         this.ctx.drawImage(playerSprite, PLAYER.width * this.frameX, PLAYER.height * this.frameY, PLAYER.width, PLAYER.height, this.x, PLAYER.y, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
@@ -451,8 +606,12 @@ class Character {
 
     throwArrow(shoot) {
         this.arrow.shoot = shoot;
-        if (this.arrow.startPoint.length == 0) {
 
+        if (this.arrow.startPoint.length == 0 && !this.isRazorBullet && !this.isSpike) {
+            this.arrow.startPoint.push({ x: this.x, try: 5 });
+        } else if (this.isRazorBullet) {
+            this.bullets.push({ x: this.x, y: PLAYGROUND_HEIGHT - PLAYER_HEIGHT })
+        } else if (this.isSpike && this.arrow.startPoint.length <= 1) {
             this.arrow.startPoint.push({ x: this.x, try: 5 });
         }
     }
@@ -647,40 +806,36 @@ class PowerUp {
             sH: 319,
             dW: 40,
             dH: 40,
-            top: 0,
-            left: 0
         }
         this.extraTime = {
             sW: 189,
             sH: 220,
             dW: 40,
-            dH: 50,
-            top: 0,
-            left: 0
+            dH: 40,
         }
         this.extraLife = {
             sW: 600,
             sH: 557,
             dW: 40,
             dH: 40,
-            top: 0,
-            left: 0
         }
         this.spikeArrow = {
             sW: 19,
             sH: 27,
             dW: 40,
-            dH: 50,
-            top: 0,
-            left: 0
+            dH: 40,
         }
-        this.RazorBullet = {
+        this.razorBullet = {
             sW: 24,
             sH: 16,
             dW: 40,
             dH: 40,
-            top: 0,
-            left: 0
+        }
+        this.bounce = {
+            sW: 22,
+            sH: 37,
+            dW: 40,
+            dH: 40,
         }
         this.timeStart = '';
         this.timeUp = false;
@@ -690,26 +845,22 @@ class PowerUp {
     draw(positionX, positionY) {
         if (this.timeStart) {
             let elapsed = Date.now() - this.timeStart;
-            console.log(elapsed)
             if (elapsed >= 5000) {
                 this.timeUp = true;
                 return;
             }
         }
+        /* setting position of the power ups same at the ball break point */
         if (positionX) {
             this.left = positionX
         }
         if (positionY) {
             this.top = positionY
-
+                /* bringing the power down */
         } else {
-
             this.top += 10;
-
         }
-
-
-        /* boundary check */
+        /* boundary check for every PowerUps taking coin as reference for all*/
         if (this.top + this.coin.dH >= BOUNDARIES.bottom) {
             this.top = BOUNDARIES.bottom - this.coin.dH;
             if (!this.timeStart) {
@@ -717,27 +868,53 @@ class PowerUp {
                 this.timeStart = Date.now();
             }
         }
-        if (this.power == 'coin') {
-            this.coinPu(positionX, positionY);
+        /* selecting power ups to draw */
+        // if (this.power == 'coin' || 'bounceUp') {
+        this.coinPu(positionX, positionY);
 
+        // }
+        switch (this.power) {
+            case `coin`:
+                console.log("hello from coin")
+                this.coinPu(positionX, positionY);
+                break;
+            case `spike`:
+                this.spikeArrowPu(positionX, positionY);
+                break;
+            case `razorBullet`:
+                this.razorBulletPu(positionX, positionY);
+                break;
+            case `health`:
+                this.extraLifePu(positionX, positionY);
+                break;
+            case `time`:
+                this.extraTimePu(positionX, positionY);
+                break;
+            case `bounceUp`:
+                this.bouncePu(positionX, positionY);
+                break;
         }
     }
 
     coinPu(positionX, positionY) {
         this.ctx.drawImage(coinPu, 0, 0, this.coin.sW, this.coin.sH, this.left, this.top, this.coin.dW, this.coin.dH);
     }
-    extraTimePu() {
-        this.ctx.drawImage(extraTimePu, 0, 0, this.extraTime.sW, this.extraTime.sH, this.extraTime.top, this.extraTime.left, this.extraTime.dW, this.extraTime.dH);
+    extraTimePu(positionX, positionY) {
+        this.ctx.drawImage(extraTimePu, 0, 0, this.extraTime.sW, this.extraTime.sH, this.left, this.top, this.extraTime.dW, this.extraTime.dH);
 
     }
-    extraLifePu() {
-        this.ctx.drawImage(extraLifePu, 0, 0, this.extraLife.sW, this.extraLife.sH, this.extraLife.top, this.extraLife.left, this.extraLife.dW, this.extraLife.dH);
+    extraLifePu(positionX, positionY) {
+        this.ctx.drawImage(extraLifePu, 0, 0, this.extraLife.sW, this.extraLife.sH, this.left, this.top, this.extraLife.dW, this.extraLife.dH);
     }
-    spikeArrowPu() {
-        this.ctx.drawImage(spikeArrowPu, 0, 0, this.spikeArrow.sW, this.spikeArrow.sH, this.spikeArrow.top, this.spikeArrow.left, this.spikeArrow.dW, this.spikeArrow.dH);
+    spikeArrowPu(positionX, positionY) {
+        this.ctx.drawImage(spikeArrowPu, 0, 0, this.spikeArrow.sW, this.spikeArrow.sH, this.left, this.top, this.spikeArrow.dW, this.spikeArrow.dH);
 
     }
-    razorBulletPu() {
-        this.ctx.drawImage(razorBulletPu, 0, 0, this.RazorBullet.sW, this.RazorBullet.sH, this.RazorBullet.top, this.RazorBullet.left, this.RazorBullet.dW, this.RazorBullet.dH);
+    razorBulletPu(positionX, positionY) {
+        this.ctx.drawImage(razorBulletPu, 0, 0, this.razorBullet.sW, this.razorBullet.sH, this.left, this.top, this.razorBullet.dW, this.razorBullet.dH);
+    }
+    bouncePu(positionX, positionY) {
+        this.ctx.drawImage(bouncePu, 0, 0, this.bounce.sW, this.bounce.sH, this.left, this.top, this.bounce.dW, this.bounce.dH);
+
     }
 }

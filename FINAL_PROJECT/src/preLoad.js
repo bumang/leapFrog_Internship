@@ -1,5 +1,5 @@
 /* global declarations */
-let totalImage = 18;
+let totalImage = 19;
 
 /* Image declaration and sourcing */
 let level1Img = new Image();
@@ -74,6 +74,11 @@ let spikeArrowPu = new Image();
 spikeArrowPu.src = './img/spike-arrow.jpg';
 spikeArrowPu.id = 'PU-spike-arrow';
 
+let bullet = new Image();
+bullet.src = './img/bullet.png';
+bullet.id = 'PU-bullet';
+
+
 
 class Preloader {
     constructor() {
@@ -135,6 +140,9 @@ class Preloader {
             this.imageCount += 1;
         }
         spikeArrowPu.onload = () => {
+            this.imageCount += 1;
+        }
+        bullet.onload = () => {
             this.imageCount += 1;
         }
         this.checkLoader();
