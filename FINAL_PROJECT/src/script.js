@@ -140,7 +140,6 @@ class Game {
                     this.checkTime();
                     this.collisionPowerUp();
                     this.collisionRazorBullet();
-                    this.updateHighScore();
                 }
             }
             this.start = (fps) => {
@@ -500,8 +499,8 @@ class Game {
         }
     }
     gameOver() {
-        this.updateHighScore();
         if (this.life == 0) {
+            this.updateHighScore();
             this.ballArray = [new Ball({ ctx: this.ctx })];
             this.character = new Character(this.ctx);
             this.life = 3;
@@ -518,11 +517,17 @@ class Game {
 
     updateHighScore() {
         this.highScore = localStorage.getItem("highscore");
-
         if (this.highScore < this.score) {
             localStorage.setItem("highscore", this.score);
-
             putHighScore.innerHTML = 'HIGH SCORE:' + this.score;
+        }
+    }
+
+    gameFinised() {
+        if (this.level == 10) {
+            if (this.ballArray.length == 0) {
+                preloader.menuPage();
+            }
         }
     }
 }

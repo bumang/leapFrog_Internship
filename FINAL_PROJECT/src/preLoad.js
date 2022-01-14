@@ -176,7 +176,6 @@ class Preloader {
 
     getHighScore() {
         let getScore = localStorage.getItem("highScore");
-        console.log(getScore);
         if (!getScore) {
             localStorage.setItem("highScore", "0");
         }
