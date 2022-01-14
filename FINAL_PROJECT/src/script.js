@@ -58,7 +58,7 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
         this.ctx.imageSmoothingQuality = 'high';
         this.life = 3;
-        this.level = 10;
+        this.level = 1;
         this.score = 0;
         this.pause = false;
         this.ballArray = [];
