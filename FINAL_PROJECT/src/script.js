@@ -516,9 +516,11 @@ class Game {
     }
 
     updateHighScore() {
-        this.highScore = localStorage.getItem("highscore");
+
+        this.highScore = localStorage.getItem("highScore");
         if (this.highScore < this.score) {
-            localStorage.setItem("highscore", this.score);
+            localStorage.setItem("highScore", this.score);
+            console.log(localStorage.getItem("highScore"))
             putHighScore.innerHTML = 'HIGH SCORE:' + this.score;
         }
     }
