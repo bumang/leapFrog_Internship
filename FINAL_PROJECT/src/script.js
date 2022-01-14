@@ -58,7 +58,7 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
         this.ctx.imageSmoothingQuality = 'high';
         this.life = 3;
-        this.level = 1;
+        this.level = 10;
         this.score = 0;
         this.pause = false;
         this.ballArray = [];
@@ -136,11 +136,11 @@ class Game {
                     this.levelIndicator();
                     this.lifeIndicator();
                     this.drawScore();
-                    this.gameOver();
+                    // this.gameOver();
                     this.checkTime();
                     this.collisionPowerUp();
                     this.collisionRazorBullet();
-                    this.gameFinised();
+                    this.updateHighScore();
                 }
             }
             this.start = (fps) => {
@@ -417,48 +417,54 @@ class Game {
         switch (this.level) {
             case 1:
                 this.ballArray.push(new Ball({ ctx: this.ctx, powerUpType: [`coin`] }));
+                this.updateHighScore();
                 break;
 
             case 2:
                 this.ballArray.push(new Ball({ ctx: this.ctx, powerUpType: [`health`] }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, powerUpType: [`razorBullet`] }));
+                this.updateHighScore();
                 break;
             case 3:
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250, powerUpType: [`spike`] }));
+                this.updateHighScore();
                 break;
             case 4:
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 450, dy: 24, powerUpType: [`bounceUp`] }));
+                this.updateHighScore();
                 break;
             case 5:
                 this.ballArray.push(new Ball({ ctx: this.ctx, powerUpType: [`health`] }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, positionX: SIDE_BAR_WIDTH + BALL_DEAFAULT * 2, positionY: 400, powerUpType: [`spike`] }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, powerUpType: [`time`] }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 400, powerUpType: [`time`] }));
+                this.updateHighScore();
                 break;
             case 6:
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250, powerUpType: [`health`] }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT + MARGIN_OF_ERROR, powerUpType: [`razorBullet`] }));
+                this.updateHighScore();
                 break;
             case 7:
                 this.ballArray.push(new Ball({ ctx: this.ctx, positionY: 450, powerUpType: [`spike`] }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 450, powerUpType: [`health`] }));
+                this.updateHighScore();
                 break;
             case 8:
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 250, powerUpType: [`spike`] }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, positionX: PLAYGROUND_WIDTH + BALL_DEAFAULT + MARGIN_OF_ERROR, positionY: 350, powerUpType: [`time`] }));
+                this.updateHighScore();
                 break;
             case 9:
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 75, height: 75, positionY: 450, dy: 24, powerUpType: [`razorBullet`] }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 75, height: 75, positionY: 350, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT, powerUpType: [`health`] }));
+                this.updateHighScore();
                 break;
             case 10:
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 400, dy: 24, powerUpType: [`spike`] }));
                 this.ballArray.push(new Ball({ ctx: this.ctx, width: 100, height: 100, positionY: 400, dy: 24, positionX: PLAYGROUND_WIDTH - BALL_DEAFAULT, powerUpType: [`time`] }));
+                this.updateHighScore();
                 break;
-
-
-
-
         }
     }
 
