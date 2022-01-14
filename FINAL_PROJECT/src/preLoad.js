@@ -79,7 +79,9 @@ bullet.src = './img/bullet.png';
 bullet.id = 'PU-bullet';
 
 
+const startButton = document.querySelector('.start-button');
 
+const putHighScore = document.querySelector('.high-score');
 
 
 
@@ -87,7 +89,6 @@ class Preloader {
     constructor() {
         this.imageCount = 0;
         this.preLoader = document.querySelector('.pre-loader');
-
 
     }
     loadImg() {
@@ -155,40 +156,40 @@ class Preloader {
     checkLoader() {
         let checker = setInterval(() => {
             if (this.imageCount == totalImage) {
+
+                startButton.addEventListener('click', () => {
+                    this.menuPage();
+
+
+                })
                 clearInterval(checker);
-                var game = new Game();
-                game.menuPage();
+                this.getHighScore();
             }
 
         }, 100);
-        this.removePreLoader();
+
 
     }
     removePreLoader() {
-
         this.preLoader.style.display = 'none';
+    }
+
+    getHighScore() {
+        let getScore = localStorage.getItem("highScore");
+        console.log(getScore);
+        if (!getScore) {
+            localStorage.setItem("highScore", "0");
+        }
+        putHighScore.innerHTML = 'HIGH SCORE:' + getScore;
+    }
+
+    menuPage() {
+
+        this.removePreLoader();
+        var game = new Game();
+        game.Play();
     }
 }
 
-
 var preloader = new Preloader();
 preloader.loadImg();
-
-// let checkPreloader = setInterval(() => {
-//     if (assetsLoadingLeft === 0) {
-//         clearInterval(checkPreloader);
-
-//         document.querySelector(".start-menu").style.display = "flex";
-
-//         let count = 100;
-//         let removePreloader = setInterval(() => {
-//             if (count <= 0) {
-//                 clearInterval(removePreloader);
-//                 preloader.style.display = "none";
-//             } else {
-//                 count -= 2;
-//                 preloader.style.opacity = count + "%";
-//             }
-//         }, 10);
-//     }
-// }, 100);

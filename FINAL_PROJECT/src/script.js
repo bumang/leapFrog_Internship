@@ -63,13 +63,7 @@ class Game {
         this.pause = false;
         this.ballArray = [];
         this.powerUpArray = [];
-    }
-
-
-    menuPage() {
-        this.ctx.draw
-
-        this.Play()
+        this.writingMode = false;
     }
 
     Play() {
@@ -112,7 +106,15 @@ class Game {
 
             /* adding animation */
             this.smoothAnimation = () => {
-                requestAnimationFrame(this.smoothAnimation);
+                if (this.writingMode == false) {
+
+                    requestAnimationFrame(this.smoothAnimation);
+                } else {
+                    setTimeout(() => {
+                        requestAnimationFrame(this.smoothAnimation);
+                        this.writingMode = false;
+                    }, 1500)
+                }
                 now = Date.now();
                 elapsed = now - previous;
                 if (elapsed > fpsInterval) {
@@ -139,8 +141,6 @@ class Game {
                     this.collisionPowerUp();
                     this.collisionRazorBullet();
                     this.updateHighScore();
-
-
                 }
             }
             this.start = (fps) => {
@@ -168,6 +168,7 @@ class Game {
             }
             if (conditionX && conditionY) {
                 // alert('collision detected');
+                this.writingMode = true;
                 this.life = this.life - 1;
                 this.ballArray[i].position.x += 40;
                 this.ballArray[i].position.y -= 20;
@@ -499,6 +500,7 @@ class Game {
         }
     }
     gameOver() {
+        this.updateHighScore();
         if (this.life == 0) {
             this.ballArray = [new Ball({ ctx: this.ctx })];
             this.character = new Character(this.ctx);
@@ -513,13 +515,14 @@ class Game {
         this.createBalls();
 
     }
+
     updateHighScore() {
-        this.highScore = parseInt(localStorage.getItem("highscore"));
-        console.log(this.highScore);
+        this.highScore = localStorage.getItem("highscore");
         if (this.highScore < this.score) {
             localStorage.setItem("highscore", this.score);
-            // document.querySelector(".board-high-score").innerText = player.score;
+
         }
+        console.log(this.highScore);
     }
 }
 
